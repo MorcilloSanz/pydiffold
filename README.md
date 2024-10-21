@@ -11,7 +11,9 @@ $$\Delta f = div\left( \nabla f\right)$$
 
 In practice, a very simple discretization can actually work quite well—especially on fine triangulations with “nice” elements (e.g., those that satisfy the so-called Delaunay condition). A standard choice is to use the 2-dimensional [cotangent formula](https://www.cs.cmu.edu/~kmcrane/Projects/Other/nDCotanFormula.pdf):
 
+```math
 $$\left(L\phi\right)_i := \frac{1}{2}\sum_{ij}\left( \cot \alpha_{ij} + \cot \beta_{ij} \right)\left( \phi_j  - \phi_i \right)$$
+```
 
 In other words: the Laplacian of the function u at vertex $i$ is obtained by summing up the difference across all edges $ij$ incident on $i$, weighted by the sum of the cotangents of the two interior angles $\alpha_{ij}$, $\beta_{ij}$ opposite $ij$
 
