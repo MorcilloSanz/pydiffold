@@ -15,9 +15,14 @@ In practice, a very simple discretization can actually work quite well—especia
 $$\left(L\phi\right)_i := \frac{1}{2}\sum_{ij}\left( \cot \alpha_{ij} + \cot \beta_{ij} \right)\left( \phi_j  - \phi_i \right)$$
 ```
 
-In other words: the Laplacian of the function u at vertex $i$ is obtained by summing up the difference across all edges $ij$ incident on $i$, weighted by the sum of the cotangents of the two interior angles $\alpha_{ij}$, $\beta_{ij}$ opposite $ij$
-
-![](img/node.png)
+In other words: the Laplacian of the function u at vertex $i$ is obtained by summing up the difference across all edges $ij$ incident on $i$, weighted by the sum of the cotangents of the two interior angles $\alpha_{ij}$, $\beta_{ij}$ opposite $ij$.
 
 ## Partial differential equations
 It can be used for solving/approximating the [poisson equation](https://en.wikipedia.org/wiki/Poisson%27s_equation), [diffusion equation](https://en.wikipedia.org/wiki/Diffusion_equation), [heat equation](https://en.wikipedia.org/wiki/Heat_equation), [wave equation](https://en.wikipedia.org/wiki/Wave_equation) or any other equation which involves the `laplacian`.
+
+## Program
+This program is an exaple of the `Laplace-Beltrami` operator discretization of a scalarfield $\phi$ defined on a manifold $M$ using the `cotangent laplacian` formula in Python, using the following libraries:
+```
+numpy
+matplotlib
+```
