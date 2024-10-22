@@ -81,6 +81,16 @@ class Manifold:
         return Manifold(x_mesh, y_mesh, z_mesh)
     
 
+    def coords(self, i: int, j: int) -> np.array:
+
+        rows, cols = self.x_mesh.shape
+
+        if i < 0 or i >= rows or j < 0 or j >= cols:
+            return np.array([0, 0, 0])
+        else:
+            return np.array([self.x_mesh[i, j], self.y_mesh[i, j], self.z_mesh[i, j]])
+
+
     def compute_laplace_beltrami(self, phi: np.array) -> np.array:
         """
         Computes the Laplace-Beltrami operator on the manifold for a given scalar field `phi`.
@@ -102,7 +112,7 @@ class Manifold:
         laplace_beltrami: list[float] = [0] * (rows * cols)
 
         get: float = lambda i, j: 0 if i < 0 or i >= rows or j < 0 or j >= cols else phi[i + j * cols]
-        angle: float = lambda u, v: math.acos(np.dot(u, v) / np.linalg.norm(u) * np.linalg.norm(v))
+        angle: float = lambda u, v: math.acos(np.dot(u, v) / (np.linalg.norm(u) * np.linalg.norm(v)))
         cot: float = lambda x: math.cos(x) / math.sin(x)
 
         for i in range(rows):
@@ -120,6 +130,94 @@ class Manifold:
                 # Cotangent laplacian formula. As the mesh is uniform, all the angles
                 # alpha and beta are the same.
                 sum += sum_cots * (north_diff + south_diff + east_diff + west_diff)
+                laplace_beltrami[i + j * cols] = sum / 2.0
+
+        return np.array(laplace_beltrami)
+    
+
+    def compute_non_uniform_laplace_beltrami(self, phi: np.array) -> np.array:
+        """
+        Computes the Laplace-Beltrami operator on the manifold for a given scalar field `phi`.
+
+        The Laplace-Beltrami operator is a generalization of the Laplacian to curved surfaces
+        and is used to describe the diffusion of scalar fields on the manifold.
+
+        Parameters:
+        -----------
+        phi : np.array
+            A 1D array representing the scalar field on the manifold (same size as the mesh).
+
+        Returns:
+        --------
+        np.array
+            A 1D array representing the Laplace-Beltrami operator applied to the scalar field `phi`.
+        """
+        rows, cols = self.x_mesh.shape
+        laplace_beltrami: list[float] = [0] * (rows * cols)
+
+        get: float = lambda i, j: 0 if i < 0 or i >= rows or j < 0 or j >= cols else phi[i + j * cols]
+        angle: float = lambda u, v: math.acos(np.dot(u, v) / (np.linalg.norm(u) * np.linalg.norm(v)))
+        cot: float = lambda x: math.cos(x) / math.sin(x)
+
+        for i in range(rows):
+            for j in range(cols):
+
+                sum: float = 0
+                phi_ij: float = get(i, j)
+
+                # North weight
+                north_alpha_u: np.array = self.coords(i, j) - self.coords(i - 1, j - 1)
+                north_alpha_v: np.array = self.coords(i, j - 1) - self.coords(i - 1, j - 1)
+                north_alpha: float = angle(north_alpha_u, north_alpha_v)
+
+                north_beta_u: np.array = self.coords(i, j) - self.coords(i + 1, j - 1)
+                north_beta_v: np.array = self.coords(i, j - 1) - self.coords(i + 1, j - 1)
+                north_beta: float = angle(north_beta_u, north_beta_v)
+
+                north_cots: float = cot(north_alpha) + cot(north_beta)
+
+                # South weight
+                south_alpha_u: np.array = self.coords(i, j + 1) - self.coords(i - 1, j + 1)
+                south_alpha_v: np.array = self.coords(i, j) - self.coords(i - 1, j + 1)
+                south_alpha: float = angle(south_alpha_u, south_alpha_v)
+
+                south_beta_u: np.array = self.coords(i, j + 1) - self.coords(i + 1, j + 1)
+                south_beta_v: np.array = self.coords(i, j) - self.coords(i + 1, j + 1)
+                south_beta: float = angle(south_beta_u, south_beta_v)
+
+                south_cots: float = cot(south_alpha) + cot(south_beta)
+
+                # East weight
+                east_alpha_u: np.array = self.coords(i, j) - self.coords(i - 1, j + 1)
+                east_alpha_v: np.array = self.coords(i - 1, j) - self.coords(i - 1, j + 1)
+                east_alpha: float = angle(east_alpha_u, east_alpha_v)
+
+                east_beta_u: np.array = self.coords(i, j) - self.coords(i - 1, j - 1)
+                east_beta_v: np.array = self.coords(i - 1, j) - self.coords(i - 1, j - 1)
+                east_beta: float = angle(east_beta_u, east_beta_v)
+
+                east_cots: float = cot(east_alpha) + cot(east_beta)
+
+                # West weight
+                west_alpha_u: np.array = self.coords(i, j) - self.coords(i + 1, j - 1)
+                west_alpha_v: np.array = self.coords(i + 1, j) - self.coords(i + 1, j - 1)
+                west_alpha: float = angle(west_alpha_u, west_alpha_v)
+
+                west_beta_u: np.array = self.coords(i, j) - self.coords(i + 1, j + 1)
+                west_beta_v: np.array = self.coords(i + 1, j) - self.coords(i + 1, j + 1)
+                west_beta: float = angle(west_beta_u, west_beta_v)
+
+                west_cots: float = cot(west_alpha) + cot(west_beta)
+                
+                # Finite Differences
+                north_diff: float = get(i, j - 1) - phi_ij
+                south_diff: float = get(i, j + 1) - phi_ij
+                east_diff: float =  get(i - 1, j) - phi_ij
+                west_diff: float =  get(i + 1, j) - phi_ij
+
+                # Cotangent laplacian formula. As the mesh is uniform, all the angles
+                # alpha and beta are the same.
+                sum += north_cots * north_diff + south_cots * south_diff + east_cots * east_diff + west_cots * west_diff
                 laplace_beltrami[i + j * cols] = sum / 2.0
 
         return np.array(laplace_beltrami)
