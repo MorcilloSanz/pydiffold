@@ -61,7 +61,32 @@ def compute_phi(manifold: Manifold) -> np.array:
 
 
 def solve_heat_equation(phi: np.array, manifold: Manifold, alpha: float = 1.0, delta_t: float = 1.0) -> None:
+    """
+    Solves the heat equation on a given manifold over one time step.
 
+    This function updates the scalar field `phi` based on the heat equation, using the 
+    Laplace-Beltrami operator to compute the diffusion of heat over the surface of the manifold.
+
+    The heat equation is given by:
+        ∂phi/∂t = alpha * Δ(phi)
+    where `alpha` is the thermal diffusivity, and Δ(phi) is the Laplace-Beltrami operator applied to `phi`.
+
+    Parameters:
+    -----------
+    phi : np.array
+        A 1D array representing the initial scalar field (temperature distribution) on the manifold.
+    manifold : Manifold
+        An instance of the `Manifold` class, containing the mesh grids and a method to compute the Laplace-Beltrami operator.
+    alpha : float, optional (default=1.0)
+        The thermal diffusivity constant, controlling the rate of heat diffusion.
+    delta_t : float, optional (default=1.0)
+        The time step for the heat equation update.
+
+    Returns:
+    --------
+    np.array
+        A 1D array representing the updated scalar field `phi` after one time step.
+    """
     laplace_beltrami = manifold.compute_laplace_beltrami(phi)
     rows, cols = manifold.x_mesh.shape
 
