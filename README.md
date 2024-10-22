@@ -20,6 +20,13 @@ In other words: the Laplacian of the function u at vertex $i$ is obtained by sum
 ## Partial differential equations
 It can be used for solving/approximating the [poisson equation](https://en.wikipedia.org/wiki/Poisson%27s_equation), [diffusion equation](https://en.wikipedia.org/wiki/Diffusion_equation), [heat equation](https://en.wikipedia.org/wiki/Heat_equation), [wave equation](https://en.wikipedia.org/wiki/Wave_equation) or any other equation which involves the `laplacian`.
 
+### Heat equation
+As the prototypical parabolic partial differential equation, the heat equation is among the most widely studied topics in pure mathematics, and its analysis is regarded as fundamental to the broader field of partial differential equations. The heat equation can also be considered on Riemannian manifolds, leading to many geometric applications:
+
+$$\frac{\partial u}{\partial t} = \alpha \Delta u$$
+
+![](img/heat.png)
+
 ## Program
 This program is an exaple of the `Laplace-Beltrami` operator discretization of a scalarfield $\phi$ defined on a manifold $M$ using the `cotangent laplacian` formula in Python, using the following libraries:
 ```
