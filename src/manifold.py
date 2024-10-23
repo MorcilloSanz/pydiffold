@@ -236,10 +236,15 @@ class Manifold:
                 east_diff: float =  get(i - 1, j) - phi_ij
                 west_diff: float =  get(i + 1, j) - phi_ij
 
+                # Calculate the area 
+                width: float = np.linalg.norm(self.coords(i + 1, j) - self.coords(i - 1, j))
+                height: float = np.linalg.norm(self.coords(i, j + 1) - self.coords(i, j - 1))
+                area: float = abs(width * height)
+
                 # Cotangent laplacian formula. As the mesh is uniform, all the angles
                 # alpha and beta are the same.
                 sum += north_cots * north_diff + south_cots * south_diff + east_cots * east_diff + west_cots * west_diff
-                laplace_beltrami[i + j * cols] = sum / 2.0
+                laplace_beltrami[i + j * cols] = sum / (2.0 * area)
 
         return np.array(laplace_beltrami)
 
