@@ -7,7 +7,7 @@ from manifold import *
 
 
 XY_LIMITS: tuple[int, int] = (-5, 5)
-XY_POINTS: int = 15
+XY_POINTS: int = 25
 
 
 def f(x_mesh, y_mesh):
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     manifold: Manifold = Manifold.create_manifold(f, XY_LIMITS, XY_LIMITS, XY_POINTS)
 
     phi = compute_phi(manifold)
-    laplace_beltrami = manifold.compute_laplace_beltrami(phi)
+    laplace_beltrami = manifold.laplace_beltrami(phi)
 
     fig = plt.figure(figsize=(12, 6))
 
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     ax1 = fig.add_subplot(121, projection='3d')
     ax1.plot_surface(manifold.x_mesh, manifold.y_mesh, manifold.z_mesh, color='blue', edgecolor='k', alpha=0.5, label='M')
 
-    scatter1 = ax1.scatter(manifold.x_mesh, manifold.y_mesh, manifold.z_mesh, c=phi, cmap='coolwarm', s=25, label='phi(x,y,z)')
+    scatter1 = ax1.scatter(manifold.x_mesh, manifold.y_mesh, manifold.z_mesh, c=phi, cmap='coolwarm', s=25, label='phi')
     fig.colorbar(scatter1, ax=ax1, pad=0.1, shrink=0.7, aspect=20)
 
     ax1.legend(loc='upper right')
@@ -87,7 +87,7 @@ if __name__ == "__main__":
     ax2 = fig.add_subplot(122, projection='3d')
     ax2.plot_surface(manifold.x_mesh, manifold.y_mesh, manifold.z_mesh, color='blue', edgecolor='k', alpha=0.5, label='M')
 
-    scatter2 = ax2.scatter(manifold.x_mesh, manifold.y_mesh, manifold.z_mesh, c=laplace_beltrami, cmap='magma', s=25, label='Laplace Beltrami')
+    scatter2 = ax2.scatter(manifold.x_mesh, manifold.y_mesh, manifold.z_mesh, c=laplace_beltrami, cmap='magma', s=25, label='Laplace-Beltrami')
     fig.colorbar(scatter2, ax=ax2, pad=0.1, shrink=0.7, aspect=20)
 
     ax2.legend(loc='upper right')

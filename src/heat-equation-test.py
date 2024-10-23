@@ -7,7 +7,7 @@ from manifold import *
 
 
 XY_LIMITS: tuple[int, int] = (-5, 5)
-XY_POINTS: int = 15
+XY_POINTS: int = 25
 
 
 def f(x_mesh, y_mesh):
@@ -87,11 +87,15 @@ def solve_heat_equation(phi: np.array, manifold: Manifold, alpha: float = 1.0, d
     np.array
         A 1D array representing the updated scalar field `phi` after one time step.
     """
-    laplace_beltrami = manifold.compute_laplace_beltrami(phi)
+    laplace_beltrami = manifold.laplace_beltrami(phi)
     rows, cols = manifold.x_mesh.shape
 
     for i in range(rows):
         for j in range(cols):
+
+            # Boundary conditions
+            if i == 0 or j == 0 or i == rows - 1 or j == cols - 1:
+                continue
 
             index: int = i + j * cols
 
@@ -118,7 +122,7 @@ if __name__ == "__main__":
     ax1 = fig.add_subplot(221, projection='3d')  # 2x2 grid, first plot
     ax1.plot_surface(manifold.x_mesh, manifold.y_mesh, manifold.z_mesh, color='blue', edgecolor='k', alpha=0.5, label='M')
 
-    scatter1 = ax1.scatter(manifold.x_mesh, manifold.y_mesh, manifold.z_mesh, c=phi, cmap='inferno', s=25, label='phi(x,y,z)')
+    scatter1 = ax1.scatter(manifold.x_mesh, manifold.y_mesh, manifold.z_mesh, c=phi, cmap='magma', s=25, label='phi(x,y,z)')
     fig.colorbar(scatter1, ax=ax1, pad=0.1, shrink=0.7, aspect=20)
 
     ax1.legend(loc='upper right')
@@ -134,7 +138,7 @@ if __name__ == "__main__":
     ax2 = fig.add_subplot(222, projection='3d')  # 2x2 grid, second plot
     ax2.plot_surface(manifold.x_mesh, manifold.y_mesh, manifold.z_mesh, color='blue', edgecolor='k', alpha=0.5, label='M')
 
-    scatter2 = ax2.scatter(manifold.x_mesh, manifold.y_mesh, manifold.z_mesh, c=phi, cmap='inferno', s=25, label='phi(x,y,z)')
+    scatter2 = ax2.scatter(manifold.x_mesh, manifold.y_mesh, manifold.z_mesh, c=phi, cmap='magma', s=25, label='phi(x,y,z)')
     fig.colorbar(scatter2, ax=ax2, pad=0.1, shrink=0.7, aspect=20)
 
     ax2.legend(loc='upper right')
@@ -150,7 +154,7 @@ if __name__ == "__main__":
     ax3 = fig.add_subplot(223, projection='3d')  # 2x2 grid, third plot
     ax3.plot_surface(manifold.x_mesh, manifold.y_mesh, manifold.z_mesh, color='blue', edgecolor='k', alpha=0.5, label='M')
 
-    scatter3 = ax3.scatter(manifold.x_mesh, manifold.y_mesh, manifold.z_mesh, c=phi, cmap='inferno', s=25, label='phi(x,y,z)')
+    scatter3 = ax3.scatter(manifold.x_mesh, manifold.y_mesh, manifold.z_mesh, c=phi, cmap='magma', s=25, label='phi(x,y,z)')
     fig.colorbar(scatter3, ax=ax3, pad=0.1, shrink=0.7, aspect=20)
 
     ax3.legend(loc='upper right')
@@ -166,7 +170,7 @@ if __name__ == "__main__":
     ax4 = fig.add_subplot(224, projection='3d')  # 2x2 grid, fourth plot
     ax4.plot_surface(manifold.x_mesh, manifold.y_mesh, manifold.z_mesh, color='blue', edgecolor='k', alpha=0.5, label='M')
 
-    scatter4 = ax4.scatter(manifold.x_mesh, manifold.y_mesh, manifold.z_mesh, c=phi, cmap='inferno', s=25, label='phi(x,y,z)')
+    scatter4 = ax4.scatter(manifold.x_mesh, manifold.y_mesh, manifold.z_mesh, c=phi, cmap='magma', s=25, label='phi(x,y,z)')
     fig.colorbar(scatter4, ax=ax4, pad=0.1, shrink=0.7, aspect=20)
 
     ax4.legend(loc='upper right')

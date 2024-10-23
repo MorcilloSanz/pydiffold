@@ -82,16 +82,26 @@ class Manifold:
     
 
     def coords(self, i: int, j: int) -> np.array:
+        """
+        Retrieve the coordinates of a point on the manifold at a given index.
 
-        rows, cols = self.x_mesh.shape
+        Parameters:
+        -----------
+        i : int
+            The row index for the point in the mesh grid.
+        j : int
+            The column index for the point in the mesh grid.
 
-        if i < 0 or i >= rows or j < 0 or j >= cols:
-            return np.array([0, 0, 0])
-        else:
-            return np.array([self.x_mesh[i, j], self.y_mesh[i, j], self.z_mesh[i, j]])
+        Returns:
+        --------
+        np.array
+            A 1D array containing the [x, y, z] coordinates of the point
+            located at position (i, j) in the manifold's mesh grid.
+        """
+        return np.array([self.x_mesh[i, j], self.y_mesh[i, j], self.z_mesh[i, j]])
 
 
-    def compute_laplace_beltrami(self, phi: np.array) -> np.array:
+    def laplace_beltrami(self, phi: np.array) -> np.array:
         """
         Computes the Laplace-Beltrami operator on the manifold for a given scalar field `phi`.
 
@@ -117,6 +127,11 @@ class Manifold:
 
         for i in range(rows):
             for j in range(cols):
+
+                # Boundary conditions
+                if i == 0 or j == 0 or i == rows - 1 or j == cols -1:
+                    laplace_beltrami[i + j * cols] = 0
+                    continue
 
                 sum: float = 0
                 phi_ij: float = get(i, j)
@@ -135,22 +150,23 @@ class Manifold:
         return np.array(laplace_beltrami)
     
 
-    def compute_non_uniform_laplace_beltrami(self, phi: np.array) -> np.array:
+    def non_uniform_laplace_beltrami(self, phi: np.array) -> np.array:
         """
-        Computes the Laplace-Beltrami operator on the manifold for a given scalar field `phi`.
+        Computes the Laplace-Beltrami operator on a non-uniform manifold for a given scalar field `phi`.
 
-        The Laplace-Beltrami operator is a generalization of the Laplacian to curved surfaces
-        and is used to describe the diffusion of scalar fields on the manifold.
+        This method generalizes the Laplace-Beltrami operator to non-uniform meshes by accounting for 
+        varying angles between the mesh points, using the cotangent formula for each point on the manifold.
 
         Parameters:
         -----------
         phi : np.array
-            A 1D array representing the scalar field on the manifold (same size as the mesh).
+            A 1D array representing the scalar field on the manifold (same size as the mesh grid).
 
         Returns:
         --------
         np.array
-            A 1D array representing the Laplace-Beltrami operator applied to the scalar field `phi`.
+            A 1D array representing the Laplace-Beltrami operator applied to the scalar field `phi`, 
+            accounting for the non-uniform geometry of the mesh.
         """
         rows, cols = self.x_mesh.shape
         laplace_beltrami: list[float] = [0] * (rows * cols)
@@ -161,6 +177,11 @@ class Manifold:
 
         for i in range(rows):
             for j in range(cols):
+
+                # Boundary conditions
+                if i == 0 or j == 0 or i == rows - 1 or j == cols -1:
+                    laplace_beltrami[i + j * cols] = 0
+                    continue
 
                 sum: float = 0
                 phi_ij: float = get(i, j)
