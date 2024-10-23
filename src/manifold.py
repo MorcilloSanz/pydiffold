@@ -149,33 +149,33 @@ class Manifold:
             for j in range(cols):
 
                 # Boundary conditions
-                if i == 0 or j == 0 or i == rows - 1 or j == cols -1:
-                    pass
+                if i <= 0 or j <= 0 or i >= rows - 1 or j >= cols - 1:
+                    continue
 
-                # Compute differences
+                neighbors: list[tuple[int, int]] = [
+                    (i - 1, j - 1), (i   , j - 1), (i + 1, j - 1),
+                    (i - 1,     j),                (i + 1,     j),
+                    (i - 1, j + 1), (i   , j + 1), (i + 1, j + 1)
+                ]
+
                 phi_ij: float = get(i, j)
-                north_diff: float = get(i, j - 1) - phi_ij
-                south_diff: float = get(i, j + 1) - phi_ij
-                west_diff: float =  get(i - 1, j) - phi_ij
-                east_diff: float =  get(i + 1, j) - phi_ij
-
-                # Compute tangent space
                 coords_ij: np.array = self.coords(i, j)
 
-                north_tangent: np.array = self.coords(i, j - 1) - coords_ij
-                north_tangent /= np.linalg.norm(north_tangent)
+                grad: np.array = np.zeros(3)
+                for neighbor in neighbors:
 
-                south_tangent: np.array = self.coords(i, j + 1) - coords_ij
-                south_tangent /= np.linalg.norm(south_tangent)
+                    # Compute difference
+                    diff: float = get(neighbor[0], neighbor[1]) - phi_ij
 
-                west_tangent: np.array = self.coords(i - 1, j) - coords_ij
-                west_tangent /= np.linalg.norm(west_tangent)
+                    # Compute tangent vector
+                    tangent_vector: np.array = self.coords(neighbor[0], neighbor[1]) - coords_ij
+                    tangent_vector /= np.linalg.norm(tangent_vector)
 
-                east_tangent: np.array = self.coords(i + 1, j) - coords_ij
-                east_tangent /= np.linalg.norm(east_tangent)
+                    # Project the derivative onto the vector
+                    grad += diff * tangent_vector
 
                 # Compute gradient
-                gradient[i + j * cols] = north_diff * north_tangent + south_diff * south_tangent + west_diff * west_tangent + east_diff * east_tangent
+                gradient[i + j * cols] = grad
 
         return gradient
 
