@@ -101,6 +101,85 @@ class Manifold:
         return np.array([self.x_mesh[i, j], self.y_mesh[i, j], self.z_mesh[i, j]])
 
 
+    def surface_gradient(self, phi: np.array) -> np.array:
+        """
+        Compute the surface gradient of a scalar field defined on a 3D manifold.
+
+        This function calculates the gradient of the scalar field `phi` on the surface of the
+        manifold by considering the differences between adjacent points and using the tangent vectors
+        to represent the surface geometry in three-dimensional space.
+
+        Parameters:
+        -----------
+        phi : np.array
+            A 1D array representing the scalar field values at each point in the 3D mesh grid.
+            The length of `phi` should be equal to the total number of points in the mesh grid
+            (rows * cols).
+
+        Returns:
+        --------
+        np.array
+            A 2D array of shape (rows * cols, 3) where each row corresponds to the surface gradient
+            vector at the respective point in the mesh grid. Each gradient vector is represented
+            in 3D space as [gx, gy, gz].
+
+        Notes:
+        ------
+        - The function does not compute the gradient at the boundary points (i.e., when
+        `i` or `j` is at the edge of the mesh grid). For these points, the gradient is left
+        as zero.
+        - The gradients are computed by taking the differences between the values of `phi` at 
+        adjacent points and scaling these differences by the normalized tangent vectors that
+        correspond to the directions of the differences.
+        - The tangent vectors are computed by obtaining the coordinates of adjacent points
+        using the `coords` method, ensuring that the gradient reflects the surface's geometry.
+
+        Example:
+        ---------
+        >>> phi = np.array([...])  # Some scalar field values in 3D space
+        >>> gradient = manifold.surface_gradient(phi)
+        >>> print(gradient)  # Outputs the surface gradient at each point in the manifold.
+        """
+        rows, cols = self.x_mesh.shape
+        gradient: np.array = np.zeros((rows * cols, 3))
+
+        get: float = lambda i, j: 0 if i < 0 or i >= rows or j < 0 or j >= cols else phi[i + j * cols]
+
+        for i in range(rows):
+            for j in range(cols):
+
+                # Boundary conditions
+                if i == 0 or j == 0 or i == rows - 1 or j == cols -1:
+                    pass
+
+                # Compute differences
+                phi_ij: float = get(i, j)
+                north_diff: float = get(i, j - 1) - phi_ij
+                south_diff: float = get(i, j + 1) - phi_ij
+                west_diff: float =  get(i - 1, j) - phi_ij
+                east_diff: float =  get(i + 1, j) - phi_ij
+
+                # Compute tangent space
+                coords_ij: np.array = self.coords(i, j)
+
+                north_tangent: np.array = self.coords(i, j - 1) - coords_ij
+                north_tangent /= np.linalg.norm(north_tangent)
+
+                south_tangent: np.array = self.coords(i, j + 1) - coords_ij
+                south_tangent /= np.linalg.norm(south_tangent)
+
+                west_tangent: np.array = self.coords(i - 1, j) - coords_ij
+                west_tangent /= np.linalg.norm(west_tangent)
+
+                east_tangent: np.array = self.coords(i + 1, j) - coords_ij
+                east_tangent /= np.linalg.norm(east_tangent)
+
+                # Compute gradient
+                gradient[i + j * cols] = north_diff * north_tangent + south_diff * south_tangent + west_diff * west_tangent + east_diff * east_tangent
+
+        return gradient
+
+
     def laplace_beltrami(self, phi: np.array) -> np.array:
         """
         Computes the Laplace-Beltrami operator on the manifold for a given scalar field `phi`.
@@ -139,12 +218,12 @@ class Manifold:
                 sum_cots: float = 2 * cot(angle([1,1], [1,0]))
                 north_diff: float = get(i, j - 1) - phi_ij
                 south_diff: float = get(i, j + 1) - phi_ij
-                east_diff: float =  get(i - 1, j) - phi_ij
-                west_diff: float =  get(i + 1, j) - phi_ij
+                west_diff: float =  get(i - 1, j) - phi_ij
+                east_diff: float =  get(i + 1, j) - phi_ij
 
                 # Cotangent laplacian formula. As the mesh is uniform, all the angles
                 # alpha and beta are the same.
-                sum += sum_cots * (north_diff + south_diff + east_diff + west_diff)
+                sum += sum_cots * (north_diff + south_diff + west_diff + east_diff)
                 laplace_beltrami[i + j * cols] = sum / 2.0
 
         return np.array(laplace_beltrami)
@@ -208,33 +287,33 @@ class Manifold:
 
                 south_cots: float = cot(south_alpha) + cot(south_beta)
 
-                # East weight
-                east_alpha_u: np.array = self.coords(i, j) - self.coords(i - 1, j + 1)
-                east_alpha_v: np.array = self.coords(i - 1, j) - self.coords(i - 1, j + 1)
-                east_alpha: float = angle(east_alpha_u, east_alpha_v)
-
-                east_beta_u: np.array = self.coords(i, j) - self.coords(i - 1, j - 1)
-                east_beta_v: np.array = self.coords(i - 1, j) - self.coords(i - 1, j - 1)
-                east_beta: float = angle(east_beta_u, east_beta_v)
-
-                east_cots: float = cot(east_alpha) + cot(east_beta)
-
                 # West weight
-                west_alpha_u: np.array = self.coords(i, j) - self.coords(i + 1, j - 1)
-                west_alpha_v: np.array = self.coords(i + 1, j) - self.coords(i + 1, j - 1)
+                west_alpha_u: np.array = self.coords(i, j) - self.coords(i - 1, j + 1)
+                west_alpha_v: np.array = self.coords(i - 1, j) - self.coords(i - 1, j + 1)
                 west_alpha: float = angle(west_alpha_u, west_alpha_v)
 
-                west_beta_u: np.array = self.coords(i, j) - self.coords(i + 1, j + 1)
-                west_beta_v: np.array = self.coords(i + 1, j) - self.coords(i + 1, j + 1)
+                west_beta_u: np.array = self.coords(i, j) - self.coords(i - 1, j - 1)
+                west_beta_v: np.array = self.coords(i - 1, j) - self.coords(i - 1, j - 1)
                 west_beta: float = angle(west_beta_u, west_beta_v)
 
                 west_cots: float = cot(west_alpha) + cot(west_beta)
+
+                # East weight
+                east_alpha_u: np.array = self.coords(i, j) - self.coords(i + 1, j - 1)
+                east_alpha_v: np.array = self.coords(i + 1, j) - self.coords(i + 1, j - 1)
+                east_alpha: float = angle(east_alpha_u, east_alpha_v)
+
+                east_beta_u: np.array = self.coords(i, j) - self.coords(i + 1, j + 1)
+                east_beta_v: np.array = self.coords(i + 1, j) - self.coords(i + 1, j + 1)
+                east_beta: float = angle(east_beta_u, east_beta_v)
+
+                east_cots: float = cot(east_alpha) + cot(east_beta)
                 
                 # Finite Differences
                 north_diff: float = get(i, j - 1) - phi_ij
                 south_diff: float = get(i, j + 1) - phi_ij
-                east_diff: float =  get(i - 1, j) - phi_ij
-                west_diff: float =  get(i + 1, j) - phi_ij
+                west_diff: float =  get(i - 1, j) - phi_ij
+                east_diff: float =  get(i + 1, j) - phi_ij
 
                 # Calculate the area 
                 width: float = np.linalg.norm(self.coords(i + 1, j) - self.coords(i - 1, j))
@@ -243,7 +322,7 @@ class Manifold:
 
                 # Cotangent laplacian formula. As the mesh is uniform, all the angles
                 # alpha and beta are the same.
-                sum += north_cots * north_diff + south_cots * south_diff + east_cots * east_diff + west_cots * west_diff
+                sum += north_cots * north_diff + south_cots * south_diff + west_cots * west_diff + east_cots * east_diff
                 laplace_beltrami[i + j * cols] = sum / (2.0 * area)
 
         return np.array(laplace_beltrami)
