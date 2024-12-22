@@ -30,7 +30,7 @@ import numpy as np
 
 class Manifold:
     """
-    Class representing a 3D manifold created from a mathematical function.
+    Class representing a 2-manifold created from a mathematical function.
     """
 
     def __init__(self, x_mesh: np.array, y_mesh: np.array, z_mesh: np.array) -> None:
