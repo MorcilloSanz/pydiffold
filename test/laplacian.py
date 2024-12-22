@@ -1,9 +1,12 @@
-import math
+import sys
+import os
 
 import numpy as np
 import matplotlib.pyplot as plt
 
-from manifold import *
+# Add the root directory of the project to the path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from differential_geometry.manifold import Manifold
 
 
 XY_LIMITS: tuple[int, int] = (-5, 5)
@@ -51,13 +54,11 @@ def compute_phi(manifold: Manifold) -> np.array:
         A 1D array representing the scalar field `phi` on the manifold.
     """
     rows, cols = manifold.x_mesh.shape
-    phi: list[float] = [0] * (rows * cols)
+    i = np.arange(rows).reshape(-1, 1)  # Column vector for rows
+    j = np.arange(cols).reshape(1, -1)  # Row vector for columns
 
-    for i in range(rows):
-        for j in range(cols):
-            phi[i + j * cols] = math.sin(i) + math.cos(j) 
-
-    return np.array(phi)
+    phi = np.sin(i) + np.cos(j)  # Vectorized operations
+    return phi.ravel()  # Flatten the matrix into a one-dimensional array
 
 
 if __name__ == "__main__":
@@ -99,4 +100,3 @@ if __name__ == "__main__":
 
     plt.tight_layout()
     plt.show()
-
