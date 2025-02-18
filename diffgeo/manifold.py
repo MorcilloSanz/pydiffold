@@ -187,6 +187,8 @@ class Manifold:
         The Laplace-Beltrami operator is a generalization of the Laplacian to curved surfaces
         and is used to describe the diffusion of scalar fields on the manifold.
 
+        https://www.cs.cmu.edu/~kmcrane/Projects/Other/nDCotanFormula.pdf
+
         Parameters:
         -----------
         phi : np.array
@@ -226,6 +228,8 @@ class Manifold:
 
         This method generalizes the Laplace-Beltrami operator to non-uniform meshes by accounting for 
         varying angles between the mesh points, using the cotangent formula for each point on the manifold.
+
+        https://www.cs.cmu.edu/~kmcrane/Projects/Other/nDCotanFormula.pdf
 
         Parameters:
         -----------

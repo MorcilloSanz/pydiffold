@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 # Add the root directory of the project to the path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from differential_geometry.manifold import Manifold
+from diffgeo.manifold import Manifold
 
 
 XY_LIMITS: tuple[int, int] = (-5, 5)
