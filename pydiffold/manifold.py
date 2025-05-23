@@ -154,16 +154,3 @@ class Manifold:
         """
         nx.draw(self.graph, with_labels=True, node_color='lightblue', edge_color='gray', node_size=500)
         plt.show()
-
-
-if __name__ == "__main__":
-    
-    points: np.array = np.loadtxt('bunny.txt')
-    manifold = Manifold(points, radius=0.0026)
-
-    geodesic, arc_length = manifold.geodesic(0, 11016)
-    print(f'Geodesic of arc length {arc_length}: {geodesic}')
-    print(f'Geodesic vertex coordinates: {manifold.points[geodesic]}')
-    print(f'Manifold normal bundle {manifold.normal_bundle}')
-    print(f'Manifold tangent bundle {manifold.tangent_bundle}')
-    print(f'Metric tensor {manifold.metric_tensor}')

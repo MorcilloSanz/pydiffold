@@ -1,6 +1,6 @@
 import numpy as np
 
-from manifold import Manifold
+from .manifold import Manifold
 
 
 class Function:
@@ -76,7 +76,7 @@ class ScalarField(Function):
         Returns:
             np.array: An array of gradient vectors for each point in the manifold.
         """
-        gradient: np.array = np.zeros((manifold.points.shape[0], 3))
+        gradient: np.array = np.zeros((self.manifold.points.shape[0], 3))
         
         for node in self.manifold.graph.nodes:
             
@@ -131,18 +131,3 @@ class VectorField(Function):
 
 class TensorField(Function):
     pass
-
-
-if __name__ == "__main__":
-    
-    points: np.array = np.loadtxt('bunny.txt')
-    manifold = Manifold(points, radius=0.0026)
-    
-    function: ScalarField = ScalarField(manifold)
-    print(function.values, function.values.shape)
-    
-    function.set_value(5.5, 10)
-    print(function.get_value(10))
-    
-    surface_gradient: np.array = function.compute_surface_gradient()
-    print(surface_gradient)

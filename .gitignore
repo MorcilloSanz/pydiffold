@@ -1,3 +1,4 @@
 .vscode
 pydiffold/__pycache__
 test/__pycache__
+test/bunny.txt
