@@ -11,7 +11,7 @@ from pydiffold.function import ScalarField
 if __name__ == "__main__":
     
     points: np.array = np.loadtxt('bunny.txt')
-    manifold = Manifold(points, radius=0.0026)
+    manifold = Manifold(points)
 
     geodesic, arc_length = manifold.geodesic(0, 11016)
     print(f'Geodesic of arc length {arc_length}: {geodesic}')

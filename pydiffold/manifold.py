@@ -20,17 +20,17 @@ class Manifold:
 
     __MIN_NEIGHBORHOOD: int = 3
 
-    def __init__(self, points: np.array, radius: float) -> None:
+    def __init__(self, points: np.array, k=8) -> None:
         """
         Initializes the manifold from a discrete set of points on the surface.
 
         Args:
             points (np.array): An (N x 3) array of 3D coordinates sampling the manifold.
-            radius (float): Radius used to determine local neighborhoods for each point.
+            k(int): knn search for PCA.
         """
         self.points = points
-        self.radius = radius
-
+        self.k = k
+        
         self.tree = KDTree(points)
         self.graph: nx.Graph = nx.Graph()
 
@@ -103,17 +103,16 @@ class Manifold:
         """
         for i, p in enumerate(self.points):
 
-            indices = self.tree.query_ball_point(p, r=self.radius)
+            distances, indices = self.tree.query(p, k=self.k + 1)
             neighborhood: np.array = self.points[indices]
             
             if len(neighborhood) < self.__MIN_NEIGHBORHOOD:
                 continue
             
             # Compute graph
-            for j in indices:
-                neighbor: np.array = self.points[j]
-                distance: float = np.linalg.norm(p - neighbor)
-                self.graph.add_edge(i, j, weight=distance)
+            for idx, j in enumerate(indices):
+                if j != i:
+                    self.graph.add_edge(i, j, weight=distances[idx])
 
             # Compute eigenvalues and eigenvectors
             data = self.__get_neighboorhood_data(neighborhood)
