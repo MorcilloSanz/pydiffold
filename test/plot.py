@@ -8,7 +8,7 @@ if __name__ == "__main__":
     
     # Load points
     test_path: str = str(Path(__file__).resolve().parent)
-    points: np.array = np.loadtxt(test_path + '/bunny.txt')
+    points: np.array = np.loadtxt(test_path + '/assets/bunny.txt')
     
     # Transform coordinates
     transform: np.array = np.array([

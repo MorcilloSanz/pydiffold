@@ -1,6 +1,6 @@
 import numpy as np
 
-from scipy.spatial import Delaunay
+from scipy.spatial import cKDTree
 
 from .manifold import Manifold
 
@@ -123,12 +123,73 @@ class ScalarField(Function):
         dot_product: np.array = np.einsum("ij,ij->i", gradient, normalized_normal_bundle)
         
         return gradient - dot_product[:, np.newaxis] * normalized_normal_bundle
+    
+    def __estimate_global_t(self):
+        """
+        Estimate a global t parameter for the heat kernel Laplacian using
+        the mean k-nearest neighbor distance across all points in the manifold.
 
-    def compute_laplace_beltrami(self) -> np.array:
+        Args:
+            k (int): Number of neighbors to consider (excluding self).
+
+        Returns:
+            float: Value of t = (mean_k_distance / 2)^2
+        """
+        tree = cKDTree(self.manifold.points)
+        distances, _ = tree.query(self.manifold.points, k=self.manifold.k + 1)  # include self at index 0
+
+        # Exclude the first column (distance to self = 0)
+        mean_k_distance = np.mean(distances[:, 1:])
+
+        # Belkin–Niyogi choice for t
+        t = (mean_k_distance / 2) ** 2
+        return t
+
+    def compute_laplace_beltrami(self, t=None) -> np.array:
+        """
+        Compute the Laplace-Beltrami operator approximation on a manifold using the heat kernel method
+        as described by Belkin and Niyogi (2005, 2008) in their work on Laplacian Eigenmaps for manifold learning.
+
+        This method estimates the Laplace-Beltrami operator at each node of the manifold graph by
+        summing weighted differences of function values at neighboring points. The weights are derived 
+        from the heat kernel, using the geodesic or Euclidean distances between points, scaled by a 
+        diffusion parameter t.
         
+        Δf(x_i) ≈ (1/t) * Σ_j exp(-d_ij² / (4t)) * (f(x_j) - f(x_i))
+
+        Reference:
+            Belkin, M., & Niyogi, P. (2005).
+            "Laplacian Eigenmaps for Dimensionality Reduction and Data Representation"
+            https://www2.imm.dtu.dk/projects/manifold/Papers/Laplacian.pdf
+
+        Args:
+            t (float, optional): The heat kernel scale parameter controlling the neighborhood size.
+                                    If None, it is estimated automatically based on the mean k-nearest neighbor distance.
+                                    Smaller values of t emphasize local neighborhoods, but if too small,
+                                    can lead to numerical instability or large operator values.
+
+        Returns:
+            np.array: A 1D numpy array of length equal to the number of manifold points, containing
+                        the approximated Laplace-Beltrami operator values evaluated at each node.
+        """
+        if t is None:
+            t = self.__estimate_global_t()
+            
+        laplace_beltrami: np.array = np.zeros((self.manifold.points.shape[0]))
+
         for node in self.manifold.graph.nodes:
+            
             neighbors = list(self.manifold.graph.neighbors(node))
             
-        neighbors = self.manifold.graph.neighbors(self.manifold.graph.nodes) 
-        print(neighbors)
+            sum: float = 0.0
+            for j, neighbor in enumerate(neighbors):
+                
+                if neighbor != node:
+                    d_ij = self.manifold.graph[node][neighbor].get('weight', None)
+                    w_ij = np.exp(-(d_ij**2) / (4 * t))
+                    sum += w_ij * (self.get_value(neighbor) - self.get_value(node))
+                
+            laplace_beltrami[node] = sum / t
+                
+        return laplace_beltrami
             

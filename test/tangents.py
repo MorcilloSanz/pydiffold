@@ -12,7 +12,7 @@ if __name__ == "__main__":
     
     # Load points
     test_path: str = str(Path(__file__).resolve().parent)
-    points: np.array = np.loadtxt(test_path + '/bunny.txt')
+    points: np.array = np.loadtxt(test_path + '/assets/bunny.txt')
 
     # Transform coords
     transform: np.array = np.array([
@@ -52,8 +52,8 @@ if __name__ == "__main__":
 
     ax.scatter(x, y, z, c='blue', s=0.25)
 
-    ax.quiver(x, y, z, u1, v1, w1, length=0.01, normalize=True, color='green', linewidth=0.3)
-    ax.quiver(x, y, z, u2, v2, w2, length=0.01, normalize=True, color='orange', linewidth=0.3)
+    ax.quiver(x, y, z, u1, v1, w1, normalize=False, color='green', linewidth=0.3)
+    ax.quiver(x, y, z, u2, v2, w2, normalize=False, color='orange', linewidth=0.3)
 
     ax.set_axis_off()
     ax.grid(False)
