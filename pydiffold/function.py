@@ -1,5 +1,7 @@
 import numpy as np
 
+from scipy.spatial import Delaunay
+
 from .manifold import Manifold
 
 
@@ -123,11 +125,10 @@ class ScalarField(Function):
         return gradient - dot_product[:, np.newaxis] * normalized_normal_bundle
 
     def compute_laplace_beltrami(self) -> np.array:
-        pass
-    
-
-class VectorField(Function):
-    pass
-
-class TensorField(Function):
-    pass
+        
+        for node in self.manifold.graph.nodes:
+            neighbors = list(self.manifold.graph.neighbors(node))
+            
+        neighbors = self.manifold.graph.neighbors(self.manifold.graph.nodes) 
+        print(neighbors)
+            

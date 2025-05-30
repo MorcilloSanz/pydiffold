@@ -10,18 +10,19 @@ from pydiffold.function import ScalarField
 
 if __name__ == "__main__":
     
-    points: np.array = np.loadtxt('bunny.txt')
+    test_path: str = str(Path(__file__).resolve().parent)
+    points: np.array = np.loadtxt(test_path + '/bunny.txt')
     manifold = Manifold(points)
 
     geodesic, arc_length = manifold.geodesic(0, 11016)
-    print(f'Geodesic of arc length {arc_length}: {geodesic}')
-    print(f'Geodesic vertex coordinates: {manifold.points[geodesic]}')
-    print(f'Manifold normal bundle {manifold.normal_bundle}')
-    print(f'Manifold tangent bundle {manifold.tangent_bundle}')
-    print(f'Metric tensor {manifold.metric_tensor}')
+    print(f'\033[1;95mGeodesic of arc length {arc_length}:\033[0m\n {geodesic}')
+    print(f'\033[1;95mGeodesic vertex coordinates:\033[0m\n {manifold.points[geodesic]}')
+    print(f'\033[1;95mManifold normal bundle:\033[0m\n {manifold.normal_bundle}')
+    print(f'\033[1;95mManifold tangent bundle:\033[0m\n {manifold.tangent_bundle}')
+    print(f'\033[1;95mMetric tensor:\033[0m\n {manifold.metric_tensor}')
     
     function: ScalarField = ScalarField(manifold)
-    print(f'Function values shape {function.values.shape}')
+    print(f'\033[1;95mFunction values shape:\033[0m\n {function.values.shape}')
     
     function.set_value(5.5, 10)
     print(function.get_value(10))
