@@ -38,7 +38,7 @@ if __name__ == "__main__":
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
-    sc = ax.scatter(x, y, z, c=phi.values, cmap='inferno', s=2)
+    sc = ax.scatter(x, y, z, c=phi.values, cmap='plasma', s=2)
     
     def update(frame):
         phi.values = phi.values + DELTA_T * ALPHA * phi.compute_laplace_beltrami(t=1)

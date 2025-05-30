@@ -15,16 +15,6 @@ if __name__ == "__main__":
     test_path: str = str(Path(__file__).resolve().parent)
     points: np.array = np.loadtxt(test_path + '/assets/surface.txt')
 
-    # Transform coords
-    transform: np.array = np.array([
-        [1, 0, 0],
-        [0, 0, 1], 
-        [0, 1, 0]
-    ])
-    
-    points = points @ transform.T
-    points = points[:5000] # subsample
-
     # Compute manifold
     manifold: Manifold = Manifold(points)
 
@@ -43,7 +33,7 @@ if __name__ == "__main__":
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
-    sc = ax.scatter(x, y, z, c=scalar_values, cmap='inferno', s=0.5)
+    sc = ax.scatter(x, y, z, c=scalar_values, cmap='plasma', s=0.5)
 
     # Agregar barra de color (opcional)
     fig.colorbar(sc, ax=ax, shrink=0.5, aspect=10)
