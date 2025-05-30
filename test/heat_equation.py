@@ -3,10 +3,15 @@ from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from pydiffold.manifold import Manifold
 from pydiffold.function import ScalarField
+
+
+ALPHA: float = 0.1
+DELTA_T: float = 0.1
 
 
 if __name__ == "__main__":
@@ -15,24 +20,14 @@ if __name__ == "__main__":
     test_path: str = str(Path(__file__).resolve().parent)
     points: np.array = np.loadtxt(test_path + '/assets/surface.txt')
 
-    # Transform coords
-    transform: np.array = np.array([
-        [1, 0, 0],
-        [0, 0, 1], 
-        [0, 1, 0]
-    ])
-    
-    points = points @ transform.T
-    points = points[:5000] # subsample
-
     # Compute manifold
     manifold: Manifold = Manifold(points)
 
-    function: ScalarField = ScalarField(manifold)
+    phi: ScalarField = ScalarField(manifold)
     for i in range(points.shape[0]):
-        function.set_value(np.sin(i), i)
+        phi.set_value(np.sin(i), i)
         
-    scalar_values: np.array = function.values
+    laplace_beltrami: np.array = phi.compute_laplace_beltrami(t=1)
 
     # Point coordinates
     x = points[:, 0]
@@ -43,12 +38,19 @@ if __name__ == "__main__":
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
-    sc = ax.scatter(x, y, z, c=scalar_values, cmap='inferno', s=0.5)
+    sc = ax.scatter(x, y, z, c=phi.values, cmap='inferno', s=2)
+    
+    def update(frame):
+        phi.values = phi.values + DELTA_T * ALPHA * phi.compute_laplace_beltrami(t=1)
+        sc.set_array(phi.values)
+        return sc,
 
     # Agregar barra de color (opcional)
     fig.colorbar(sc, ax=ax, shrink=0.5, aspect=10)
 
     ax.set_axis_off()
     ax.grid(False)
+    
+    anim = FuncAnimation(fig, update, frames=100, interval=100, blit=False)
 
     plt.show()
