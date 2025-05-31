@@ -7,9 +7,9 @@ operator, using only point cloud data.
 The library is designed to facilitate numerical experimentation in geometry processing and geometric PDEs by operating directly on sampled surfaces, 
 without requiring explicit mesh connectivity.
 
-[Laplacian Eigenmaps for Dimensionality Reduction and Data Representation](https://www2.imm.dtu.dk/projects/manifold/Papers/Laplacian.pdf)
-
 ## Heat Equation
+
+[Laplacian Eigenmaps for Dimensionality Reduction and Data Representation](https://www2.imm.dtu.dk/projects/manifold/Papers/Laplacian.pdf)
 
 The heat equation on a manifold is a fundamental geometric PDE that describes the diffusion of a scalar field $\phi(x,y,z;t)$ over time along the surface. In this example, PyDiffold solves the heat equation:
 
