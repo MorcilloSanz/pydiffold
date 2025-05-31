@@ -15,24 +15,15 @@ if __name__ == "__main__":
     test_path: str = str(Path(__file__).resolve().parent)
     points: np.array = np.loadtxt(test_path + '/assets/surface.txt')
 
-    # Transform coords
-    transform: np.array = np.array([
-        [1, 0, 0],
-        [0, 0, 1], 
-        [0, 1, 0]
-    ])
-    
-    points = points @ transform.T
-    points = points[:5000] # subsample
-
     # Compute manifold
     manifold: Manifold = Manifold(points)
 
     function: ScalarField = ScalarField(manifold)
     for i in range(points.shape[0]):
-        function.set_value(np.sin(i), i)
+        coords: np.array = manifold.points[i]
+        function.set_value(2 * (np.sin(coords[0] * 5) + np.sin(coords[1] * 5)), i)
         
-    laplace_beltrami: np.array = function.compute_laplace_beltrami(t=1)
+    laplace_beltrami: np.array = function.compute_laplace_beltrami(t=2)
 
     # Point coordinates
     x = points[:, 0]

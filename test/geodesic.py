@@ -26,7 +26,7 @@ if __name__ == "__main__":
     # Compute manifold
     manifold: Manifold = Manifold(points)
     
-    geodesic, arc_length = manifold.geodesic(0, 100)
+    geodesic, arc_length = manifold.geodesic(0, 2000)
     geodesic_coords: np.array = manifold.points[geodesic]
     
     print(f'Geodesic of arc length {arc_length}: {geodesic}')

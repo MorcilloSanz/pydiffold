@@ -14,7 +14,7 @@ if __name__ == "__main__":
     points: np.array = np.loadtxt(test_path + '/assets/bunny.txt')
     manifold = Manifold(points)
 
-    geodesic, arc_length = manifold.geodesic(0, 11016)
+    geodesic, arc_length = manifold.geodesic(0, 2000)
     print(f'\033[1;95mGeodesic of arc length {arc_length}:\033[0m\n {geodesic}')
     print(f'\033[1;95mGeodesic vertex coordinates:\033[0m\n {manifold.points[geodesic]}')
     print(f'\033[1;95mManifold normal bundle:\033[0m\n {manifold.normal_bundle}')
