@@ -1,6 +1,5 @@
 # PyDiffold
-PyDiffold is a Python library for differential geometric computations on 2D manifolds embedded in $\mathbb{R}^3$. It provides tools for approximating local differential 
-structure (tangent spaces, normal vectors, Riemannian metric tensors...), as well as discrete differential operators such as surface gradients and the Laplace–Beltrami 
+PyDiffold is a Python library for `differential geometry` on 2D manifolds embedded in $\mathbb{R}^3$. It provides tools for approximating `local differential structure` (tangent spaces, normal vectors, Riemannian metric tensors...), as well as discrete `differential operators` such as surface gradients and the Laplace–Beltrami 
 operator, using only point cloud data.
 
 ![](/img/fun.png)
@@ -23,11 +22,11 @@ The visualization shows how PyDiffold can perform time-dependent simulations of 
 ![](/img/heat_equation.gif)
 
 ## Features
-* **Manifold graph:** computes a graph with information about points, such as, indices, coordinates and distances using a KDTree.
-* **Compute normals:** estimates normal vectors using PCA.
-* **Compute tangent bundle:** computes the tangent bundle $TM$ estimating each tangent space $T_pM$ basis using PCA.
-* **Compute metric tensor:** computes the metric tensor $g_{\mu \nu}$ for each point of the manifold.
-* **Compute geodesics:** computes the shortest path between two points and its arc length.
+* **Manifold graph:** computes a graph $G = (N,E)$ with information about points, such as, indices, coordinates and distances using a KDTree.
+* **Compute normals:** estimates normal vectors using PCA for each point $p$ of the manifold.
+* **Compute tangent bundle:** computes the tangent bundle $TM$ estimating each tangent space $T_pM$ basis vectors using PCA for each point $p$ of the manifold.
+* **Compute metric tensor:** computes the metric tensor $g_{\mu \nu}$ for each point $p$ of the manifold.
+* **Compute geodesics:** computes the shortest path $\gamma(t)$ between two points of the manifold and its arc length $L$.
 * **Define scalar fields in manifolds:** $f : \mathcal{M} \rightarrow \mathbb{R}$.
 * **Compute gradient:** approximates the gradient $\nabla f$ of a scalar field defined in a manifold.
 * **Compute surface gradient:** computes the surface gradient $\nabla_M f$ of a scalar field defined in a manifold.
