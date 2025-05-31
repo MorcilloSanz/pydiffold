@@ -3,20 +3,16 @@ PyDiffold is a Python library for differential geometric computations on 2D mani
 structure (tangent spaces, normal vectors, Riemannian metric tensors...), as well as discrete differential operators such as surface gradients and the Laplace–Beltrami 
 operator, using only point cloud data.
 
+![](/img/fun.png)
+
 The library is designed to facilitate numerical experimentation in geometry processing and geometric PDEs by operating directly on sampled surfaces, 
 without requiring explicit mesh connectivity.
 
 [Laplacian Eigenmaps for Dimensionality Reduction and Data Representation](https://www2.imm.dtu.dk/projects/manifold/Papers/Laplacian.pdf)
 
-## Define functions in manifolds
-
-PyDiffold allows you to define scalar functions directly on a manifold represented by a point cloud
-
-![](/img/fun.png)
-
 ## Heat Equation
 
-The heat equation on a manifold is a fundamental geometric PDE that describes the diffusion of a scalar field \( \phi \) over time along the surface. In this example, PyDiffold solves the heat equation
+The heat equation on a manifold is a fundamental geometric PDE that describes the diffusion of a scalar field $\phi(x,y,z;t)$ over time along the surface. In this example, PyDiffold solves the heat equation:
 
 $$\frac{\partial \phi}{\partial t} = \alpha \Delta \phi$$
 
@@ -27,16 +23,21 @@ The visualization shows how PyDiffold can perform time-dependent simulations of 
 ![](/img/heat_equation.gif)
 
 ## Features
-* Compute normals
-* Compute tangent bundle
-* Compute normal bundle
-* Compute metric tensor
-* Compute geodesics
-* Define scalar fields in manifolds
-* Compute gradient
-* Compute surface gradient
-* Compute Laplace-Beltrami
+* **Manifold graph:** computes a graph with information about points, such as, indices, coordinates and distances using a KDTree.
+* **Compute normals:** estimates normal vectors using PCA.
+* **Compute tangent bundle:** computes the tangent bundle $TM$ estimating each tangent space $T_pM$ basis using PCA.
+* **Compute metric tensor:** computes the metric tensor $g_{\mu \nu}$ for each point of the manifold.
+* **Compute geodesics:** computes the shortest path between two points and its arc length.
+* **Define scalar fields in manifolds:** $f : \mathcal{M} \rightarrow \mathbb{R}$.
+* **Compute gradient:** approximates the gradient $\nabla f$ of a scalar field defined in a manifold.
+* **Compute surface gradient:** computes the surface gradient $\nabla_M f$ of a scalar field defined in a manifold.
+* **Compute Laplace-Beltrami:** approximates the Laplace-Beltrami $\Delta f$ of a scalar field defined in a manifold.
 
+## Dependencies
+* [NumPy](https://github.com/numpy/numpy)
+* [SciPy](https://github.com/scipy/scipy)
+* [NetworkX](https://github.com/networkx/networkx)
+* [Matplotlib](https://github.com/matplotlib/matplotlib)
 
 ## TODO
 * Vector and Tensor fields
@@ -44,3 +45,4 @@ The visualization shows how PyDiffold can perform time-dependent simulations of 
 * Christoffel symbols
 * Riemann Curvature Tensor
 * Ricci tensor
+* Higher dimensions manifolds
