@@ -11,7 +11,7 @@ from pydiffold.function import ScalarField
 
 
 ALPHA: float = 0.1
-DELTA_T: float = 0.1
+DELTA_T: float = 0.075
 
 
 if __name__ == "__main__":

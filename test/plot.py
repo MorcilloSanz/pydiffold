@@ -27,7 +27,7 @@ if __name__ == "__main__":
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
-    ax.scatter(x, y, z, c='blue', s=1)
+    ax.scatter(x, y, z, c='blue', s=0.25)
 
     ax.set_axis_off()
     ax.grid(False)
