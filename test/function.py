@@ -3,15 +3,10 @@ from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from pydiffold.manifold import Manifold
 from pydiffold.function import ScalarField
-
-
-ALPHA: float = 0.1
-DELTA_T: float = 0.075
 
 
 if __name__ == "__main__":
@@ -23,11 +18,11 @@ if __name__ == "__main__":
     # Compute manifold
     manifold: Manifold = Manifold(points)
 
-    phi: ScalarField = ScalarField(manifold)
+    function: ScalarField = ScalarField(manifold)
     for i in range(points.shape[0]):
-        phi.set_value(np.sin(i), i)
+        function.set_value(np.sin(i), i)
         
-    laplace_beltrami: np.array = phi.compute_laplace_beltrami(t=1)
+    scalar_values: np.array = function.values
 
     # Point coordinates
     x = points[:, 0]
@@ -38,19 +33,12 @@ if __name__ == "__main__":
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
-    sc = ax.scatter(x, y, z, c=phi.values, cmap='plasma', s=2)
-    
-    def update(frame):
-        phi.values = phi.values + DELTA_T * ALPHA * phi.compute_laplace_beltrami(t=1)
-        sc.set_array(phi.values)
-        return sc,
+    sc = ax.scatter(x, y, z, c=scalar_values, cmap='plasma', s=0.5)
 
     # Agregar barra de color (opcional)
     fig.colorbar(sc, ax=ax, shrink=0.5, aspect=10)
 
     ax.set_axis_off()
     ax.grid(False)
-    
-    anim = FuncAnimation(fig, update, frames=100, interval=100, blit=False)
 
     plt.show()

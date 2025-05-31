@@ -6,14 +6,13 @@ import matplotlib.pyplot as plt
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from pydiffold.manifold import Manifold
-from pydiffold.function import ScalarField
 
 
 if __name__ == "__main__":
     
     # Load points
     test_path: str = str(Path(__file__).resolve().parent)
-    points: np.array = np.loadtxt(test_path + '/assets/surface.txt')
+    points: np.array = np.loadtxt(test_path + '/assets/bunny.txt')
 
     # Transform coords
     transform: np.array = np.array([
@@ -23,30 +22,38 @@ if __name__ == "__main__":
     ])
     
     points = points @ transform.T
-    points = points[:5000] # subsample
+    points = points[:5000]  # subsample
 
     # Compute manifold
     manifold: Manifold = Manifold(points)
-
-    function: ScalarField = ScalarField(manifold)
-    for i in range(points.shape[0]):
-        function.set_value(np.sin(i), i)
-        
-    laplace_beltrami: np.array = function.compute_laplace_beltrami(t=1)
 
     # Point coordinates
     x = points[:, 0]
     y = points[:, 1]
     z = points[:, 2]
 
+    # Tangent bundle
+    t1 = manifold.tangent_bundle[:, 0, :]  # First tangent vectors
+    t2 = manifold.tangent_bundle[:, 1, :]  # Second tangent vectors
+
+    # First tangent vector components
+    u1 = t1[:, 0]
+    v1 = t1[:, 1]
+    w1 = t1[:, 2]
+
+    # Second tangent vector components
+    u2 = t2[:, 0]
+    v2 = t2[:, 1]
+    w2 = t2[:, 2]
+
     # Plot
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
-    sc = ax.scatter(x, y, z, c=laplace_beltrami, cmap='inferno', s=2)
+    ax.scatter(x, y, z, c='blue', s=0.25)
 
-    # Agregar barra de color (opcional)
-    fig.colorbar(sc, ax=ax, shrink=0.5, aspect=10)
+    ax.quiver(x, y, z, u1, v1, w1, normalize=False, color='green', linewidth=0.3)
+    ax.quiver(x, y, z, u2, v2, w2, normalize=False, color='orange', linewidth=0.3)
 
     ax.set_axis_off()
     ax.grid(False)

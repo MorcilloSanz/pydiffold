@@ -6,14 +6,13 @@ import matplotlib.pyplot as plt
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from pydiffold.manifold import Manifold
-from pydiffold.function import ScalarField
 
 
 if __name__ == "__main__":
     
     # Load points
     test_path: str = str(Path(__file__).resolve().parent)
-    points: np.array = np.loadtxt(test_path + '/assets/surface.txt')
+    points: np.array = np.loadtxt(test_path + '/assets/bunny.txt')
 
     # Transform coords
     transform: np.array = np.array([
@@ -23,30 +22,31 @@ if __name__ == "__main__":
     ])
     
     points = points @ transform.T
-    points = points[:5000] # subsample
 
     # Compute manifold
     manifold: Manifold = Manifold(points)
-
-    function: ScalarField = ScalarField(manifold)
-    for i in range(points.shape[0]):
-        function.set_value(np.sin(i), i)
-        
-    laplace_beltrami: np.array = function.compute_laplace_beltrami(t=1)
+    
+    geodesic, arc_length = manifold.geodesic(0, 100)
+    geodesic_coords: np.array = manifold.points[geodesic]
+    
+    print(f'Geodesic of arc length {arc_length}: {geodesic}')
+    print(f'Geodesic vertex coordinates: {geodesic_coords}')
 
     # Point coordinates
     x = points[:, 0]
     y = points[:, 1]
     z = points[:, 2]
+    
+    gx = geodesic_coords[:, 0]
+    gy = geodesic_coords[:, 1]
+    gz = geodesic_coords[:, 2]
 
     # Plot
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
-    sc = ax.scatter(x, y, z, c=laplace_beltrami, cmap='inferno', s=2)
-
-    # Agregar barra de color (opcional)
-    fig.colorbar(sc, ax=ax, shrink=0.5, aspect=10)
+    ax.scatter(x, y, z, c='blue', s=0.25)
+    ax.plot(gx, gy, gz, c='red', linewidth=3)
 
     ax.set_axis_off()
     ax.grid(False)
