@@ -20,9 +20,8 @@ if __name__ == "__main__":
 
     function: ScalarField = ScalarField(manifold)
     for i in range(points.shape[0]):
-        function.set_value(np.sin(i), i)
-        
-    scalar_values: np.array = function.values
+        coords: np.array = manifold.points[i]
+        function.set_value(2 * (np.sin(coords[0] * 5) + np.sin(coords[1] * 5)), i)
 
     # Point coordinates
     x = points[:, 0]
@@ -30,10 +29,10 @@ if __name__ == "__main__":
     z = points[:, 2]
 
     # Plot
-    fig = plt.figure()
+    fig = plt.figure(figsize=(8, 6), dpi=100)
     ax = fig.add_subplot(111, projection='3d')
 
-    sc = ax.scatter(x, y, z, c=scalar_values, cmap='plasma', s=0.5)
+    sc = ax.scatter(x, y, z, c=function.values, cmap='jet', s=1)
 
     # Agregar barra de color (opcional)
     fig.colorbar(sc, ax=ax, shrink=0.5, aspect=10)

@@ -7,8 +7,8 @@ if __name__ == "__main__":
     
     assets_path: str = str(Path(__file__).resolve().parent) + '/assets/'
     
-    x = np.linspace(-2, 2, 100)
-    y = np.linspace(-2, 2, 100)
+    x = np.linspace(-2, 2, 200)
+    y = np.linspace(-2, 2, 200)
     x, y = np.meshgrid(x, y)
 
     # Surface z = f(x,y)

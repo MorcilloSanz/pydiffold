@@ -8,7 +8,13 @@ without requiring explicit mesh connectivity.
 
 [Laplacian Eigenmaps for Dimensionality Reduction and Data Representation](https://www2.imm.dtu.dk/projects/manifold/Papers/Laplacian.pdf)
 
-## Heat Equation Example
+## Define functions in manifolds
+
+PyDiffold allows you to define scalar functions directly on a manifold represented by a point cloud
+
+![](/img/fun.png)
+
+## Heat Equation
 
 The heat equation on a manifold is a fundamental geometric PDE that describes the diffusion of a scalar field \( \phi \) over time along the surface. In this example, PyDiffold solves the heat equation
 
