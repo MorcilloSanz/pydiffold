@@ -2,15 +2,10 @@
 PyDiffold is a Python library for `differential geometry` on 2D manifolds embedded in $\mathbb{R}^3$. It provides tools for approximating `local differential structure` (tangent spaces, normal vectors, Riemannian metric tensors...), as well as discrete `differential operators` such as surface gradients and the Laplace–Beltrami 
 operator, using only point cloud data.
 
-![](/img/fun.png)
-
 The library is designed to facilitate numerical experimentation in geometry processing and geometric PDEs by operating directly on sampled surfaces, 
 without requiring explicit mesh connectivity.
 
 ## Heat Equation
-
-[Laplacian Eigenmaps for Dimensionality Reduction and Data Representation](https://www2.imm.dtu.dk/projects/manifold/Papers/Laplacian.pdf)
-
 The heat equation on a manifold is a fundamental geometric PDE that describes the diffusion of a scalar field $\phi(x,y,z;t)$ over time along the surface. In this example, PyDiffold solves the heat equation:
 
 $$\frac{\partial \phi}{\partial t} = \alpha \Delta \phi$$
@@ -45,3 +40,6 @@ The visualization shows how PyDiffold can perform time-dependent simulations of 
 * Riemann Curvature Tensor
 * Ricci tensor
 * Higher dimensions manifolds
+
+## References
+[Laplacian Eigenmaps for Dimensionality Reduction and Data Representation](https://www2.imm.dtu.dk/projects/manifold/Papers/Laplacian.pdf)
