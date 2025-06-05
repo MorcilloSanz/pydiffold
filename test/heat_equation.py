@@ -1,6 +1,5 @@
 import sys
 from pathlib import Path
-import time
 
 import open3d as o3d
 import numpy as np
@@ -20,7 +19,7 @@ animation_running: bool = False
 
 def get_colors(phi: ScalarField) -> np.array:
     """
-    Generate RGB colors from a scalar field using the magma colormap.
+    Generate RGB colors from a scalar field using the gist_heat colormap.
 
     Args:
         phi (ScalarField): Scalar field defined on the manifold.
@@ -53,17 +52,18 @@ def solve_equation(phi: ScalarField, pcd: o3d.geometry.PointCloud) -> None:
     pcd.colors = o3d.utility.Vector3dVector(get_colors(phi))
 
 
-def start_animation(vis):
+def toggle_animation(vis):
     """
     Key callback to start the animation when 'A' is pressed.
     """
     global animation_running
-    animation_running = True
-    print("Animation started.")
+    animation_running = not animation_running
     return False  # Return False to keep the window open
 
 
 if __name__ == "__main__":
+    
+    print('\033[1;95mToggle animation pressing A\033[0m')
     
     # Load points
     test_path: str = str(Path(__file__).resolve().parent)
@@ -91,7 +91,7 @@ if __name__ == "__main__":
     vis.add_geometry(pcd)
     
     render_option = vis.get_render_option()
-    render_option.point_size = 20.0
+    render_option.point_size = 15.0
     
     # Animation callback
     def timer_callback(vis):
@@ -103,7 +103,7 @@ if __name__ == "__main__":
         return False
     
     vis.register_animation_callback(timer_callback)
-    vis.register_key_callback(ord("A"), start_animation)
+    vis.register_key_callback(ord("A"), toggle_animation)
 
     # Show
     vis.run()
