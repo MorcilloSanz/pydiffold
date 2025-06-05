@@ -22,7 +22,7 @@ if __name__ == "__main__":
     ])
     
     points = points @ transform.T
-    points = points[:5000]  # subsample
+    points = points[:1000]  # subsample
 
     # Compute manifold
     manifold: Manifold = Manifold(points)

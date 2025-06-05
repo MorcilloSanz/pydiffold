@@ -1,9 +1,10 @@
 import sys
 from pathlib import Path
+import time
 
+import open3d as o3d
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from pydiffold.manifold import Manifold
@@ -12,8 +13,54 @@ from pydiffold.function import ScalarField
 
 ALPHA: float = 0.2
 DELTA_T: float = 0.5
-
 HEAT_SCALE_LAPLACIAN: float = 2
+
+animation_running: bool = False
+
+
+def get_colors(phi: ScalarField) -> np.array:
+    """
+    Generate RGB colors from a scalar field using the magma colormap.
+
+    Args:
+        phi (ScalarField): Scalar field defined on the manifold.
+
+    Returns:
+        np.array: An array of RGB colors (Nx3), where N is the number of points.
+    """
+    # Normalize phi values to [0,1] for colormap
+    phi_values = phi.values
+    phi_min, phi_max = phi_values.min(), phi_values.max()
+    phi_normalized = (phi_values - phi_min) / (phi_max - phi_min)
+
+    # Generate colors using matplotlib's viridis colormap
+    cmap = plt.get_cmap("gist_heat_r")
+    colors_rgba = cmap(phi_normalized)  # Returns RGBA colors
+    colors = colors_rgba[:, :3]  # Use only RGB
+    
+    return colors
+
+
+def solve_equation(phi: ScalarField, pcd: o3d.geometry.PointCloud) -> None:
+    """
+    Perform one step of the heat equation and update the point cloud colors.
+
+    Args:
+        phi (ScalarField): The scalar field to be updated via the heat equation.
+        pcd (o3d.geometry.PointCloud): The point cloud whose colors are updated.
+    """
+    phi.values = phi.values + DELTA_T * ALPHA * phi.compute_laplace_beltrami(t=HEAT_SCALE_LAPLACIAN)
+    pcd.colors = o3d.utility.Vector3dVector(get_colors(phi))
+
+
+def start_animation(vis):
+    """
+    Key callback to start the animation when 'A' is pressed.
+    """
+    global animation_running
+    animation_running = True
+    print("Animation started.")
+    return False  # Return False to keep the window open
 
 
 if __name__ == "__main__":
@@ -22,23 +69,6 @@ if __name__ == "__main__":
     test_path: str = str(Path(__file__).resolve().parent)
     points: np.array = np.loadtxt(test_path + '/assets/bunny.txt')
     
-    # Transform coords
-    transform: np.array = np.array([
-        [1, 0, 0],
-        [0, 0, 1], 
-        [0, 1, 0]
-    ])
-    
-    theta_z: float = np.pi
-    
-    rotation_z: np.array = np.array([
-        [np.cos(theta_z), -np.sin(theta_z), 0],
-        [np.sin(theta_z),  np.cos(theta_z), 0],
-        [0,              0,                 1]
-    ])
-    
-    points = points @ transform.T @ rotation_z.T
-
     # Compute manifold
     manifold: Manifold = Manifold(points)
 
@@ -47,29 +77,34 @@ if __name__ == "__main__":
     for i in range(points.shape[0]):
         coords: np.array = manifold.points[i]
         phi.set_value(np.sin(coords[0] * 3) + np.sin(coords[1] * 3), i)
-
-    # Point coordinates
-    x = points[:, 0]
-    y = points[:, 1]
-    z = points[:, 2]
-
-    # Plot
-    fig = plt.figure(figsize=(8, 8), dpi=100)
-    ax = fig.add_subplot(111, projection='3d')
-
-    sc = ax.scatter(x, y, z, c=phi.values, cmap='hot', s=15)
+        
+    # Create pcd for Open3D
+    pcd = o3d.geometry.PointCloud()
+    pcd.points = o3d.utility.Vector3dVector(points)
     
-    def update(frame):
-        phi.values = phi.values + DELTA_T * ALPHA * phi.compute_laplace_beltrami(t=HEAT_SCALE_LAPLACIAN)
-        sc.set_array(phi.values)
-        return sc,
-
-    # Agregar barra de color (opcional)
-    fig.colorbar(sc, ax=ax, shrink=0.5, aspect=10)
-
-    ax.set_axis_off()
-    ax.grid(False)
+    colors: np.array = get_colors(phi)
+    pcd.colors = o3d.utility.Vector3dVector(colors)
     
-    anim = FuncAnimation(fig, update, frames=100, interval=0, blit=False)
+    # 3D viewer
+    vis = o3d.visualization.VisualizerWithKeyCallback()
+    vis.create_window(width=800, height=800)
+    vis.add_geometry(pcd)
+    
+    render_option = vis.get_render_option()
+    render_option.point_size = 20.0
+    
+    # Animation callback
+    def timer_callback(vis):
+        if animation_running:
+            solve_equation(phi, pcd)
+            vis.update_geometry(pcd)
+        vis.poll_events()
+        vis.update_renderer()
+        return False
+    
+    vis.register_animation_callback(timer_callback)
+    vis.register_key_callback(ord("A"), start_animation)
 
-    plt.show()
+    # Show
+    vis.run()
+    vis.destroy_window()
