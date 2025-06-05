@@ -33,7 +33,7 @@ def get_colors(phi: ScalarField) -> np.array:
     phi_normalized = (phi_values - phi_min) / (phi_max - phi_min)
 
     # Generate colors using matplotlib's viridis colormap
-    cmap = plt.get_cmap("gist_heat_r")
+    cmap = plt.get_cmap("gist_heat")
     colors_rgba = cmap(phi_normalized)  # Returns RGBA colors
     colors = colors_rgba[:, :3]  # Use only RGB
     
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     phi: ScalarField = ScalarField(manifold)
     for i in range(points.shape[0]):
         coords: np.array = manifold.points[i]
-        phi.set_value(np.sin(coords[0] * 3) + np.sin(coords[1] * 3), i)
+        phi.set_value(np.sin(coords[0] * 2) + np.sin(coords[1] * 2), i)
         
     # Create pcd for Open3D
     pcd = o3d.geometry.PointCloud()

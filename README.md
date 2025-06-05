@@ -5,16 +5,15 @@ operator, using only point cloud data.
 The library is designed to facilitate numerical experimentation in geometry processing and geometric PDEs by operating directly on sampled surfaces, 
 without requiring explicit mesh connectivity.
 
-## Heat Equation
-The heat equation on a manifold is a fundamental geometric PDE that describes the diffusion of a scalar field $\phi(x,y,z;t)$ over time along the surface. In this example, PyDiffold solves the heat equation:
+## PDE
 
 $$\frac{\partial \phi}{\partial t} = \alpha \Delta \phi$$
 
-on a curved 2D manifold embedded in $\mathbb{R}^3$, where $\Delta$ denotes the Laplace–Beltrami operator. The simulation demonstrates the evolution of an initial heat distribution under intrinsic surface diffusion, with the geometry taken into account through local differential operators estimated from the point cloud.
-
-The visualization shows how PyDiffold can perform time-dependent simulations of PDEs on manifolds without requiring a mesh, relying instead on a purely point-based representation.
-
 ![](/img/heat_equation.gif)
+
+$$\frac{\partial^2 \phi}{\partial t^2} = C \Delta \phi$$
+
+![](/img/wave_equation.gif)
 
 ## Features
 * **Manifold graph:** computes a graph $G = (N,E)$ with information about points, such as, indices, coordinates and distances using a KDTree.
