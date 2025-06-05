@@ -13,7 +13,7 @@ A geodesic is the shortest path between two points on a curved surface or manifo
 
 The arc length of a geodesic is the distance measured along the curve between its endpoints. It quantifies the actual length of the path on the manifold, taking into account its curvature. Calculating the arc length is essential for understanding the geometry and distances on curved surfaces:
 
-$$L(\gamma )=\int _{a}^{b}{\sqrt {g_{\gamma (t)}({\dot {\gamma }}(t),{\dot {\gamma }}(t))}}\,dt$$
+$$ L(\gamma)=\int_{a}^{b}\sqrt{g_{\gamma(t)}(\dot{\gamma}(t),\dot{\gamma}(t))}\,dt$$
 
 ## PDE
 Since `PyDiffold` allows you to define functions on a manifold and perform advanced differential calculations such as the gradient, surface gradient, and Laplace-Beltrami operator, it provides powerful tools to solve partial differential equations (PDEs) on curved spaces.
