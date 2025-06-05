@@ -1,23 +1,37 @@
 # PyDiffold
-PyDiffold is a Python library for `differential geometry` on 2D manifolds embedded in $\mathbb{R}^3$. It provides tools for approximating `local differential structure` (tangent spaces, normal vectors, Riemannian metric tensors...), as well as discrete `differential operators` such as surface gradients and the Laplace–Beltrami 
+`PyDiffold` is a Python library for `differential geometry` on 2D manifolds embedded in $\mathbb{R}^3$. It provides tools for approximating `local differential structure` (tangent spaces, normal vectors, Riemannian metric tensors...), as well as discrete `differential operators` such as surface gradients and the Laplace–Beltrami 
 operator, using only point cloud data.
 
 The library is designed to facilitate numerical experimentation in geometry processing and geometric PDEs by operating directly on sampled surfaces, 
 without requiring explicit mesh connectivity.
 
 ## PDE
-A scalar field $\phi(x,y,z;t)$ is defined on a manifold $M$.
+Since `PyDiffold` allows you to define a function as a scalar field, consider a scalar field $\phi(x,y,z;t)$ is defined on a manifold $M$. In the test folder, you can find example code for solving the heat and wave equations on a manifold using PyDiffold computing the Laplace-Beltrami operator.
 
-<p align="center" style="display: flex; justify-content: center; gap: 40px;">
-  <figure style="margin: 0; text-align: center;">
-    <img src="/img/heat_equation.gif" alt="Imagen 1" width="300"/>
-    <figcaption>Figure 1: Heat equation</figcaption>
-  </figure>
-  <figure style="margin: 0; text-align: center;">
-    <img src="/img/wave_equation.gif" alt="Imagen 2" width="300"/>
-    <figcaption>Figura 2: Wave equation</figcaption>
-  </figure>
-</p>
+<table align="center">
+  <tr>
+    <td align="center">
+      <img src="/img/heat_equation.gif" alt="Imagen 1" width="300"/><br/>
+      <small>Figure 1: Heat equation</small>
+    </td>
+    <td align="center" style="padding-left: 40px;">
+      <img src="/img/wave_equation.gif" alt="Imagen 2" width="300"/><br/>
+      <small>Figure 2: Wave equation</small>
+    </td>
+  </tr>
+</table>
+
+**Heat Equation:**  
+The heat equation models the temporal evolution of temperature \(\phi\) in a medium, describing heat diffusion:  
+$$
+\frac{\partial \phi}{\partial t} = \alpha \Delta \phi
+$$
+
+**Wave Equation:**  
+The wave equation models the propagation of disturbances \(\phi\) in a medium, such as sound or electromagnetic waves:  
+$$
+\frac{\partial^2 \phi}{\partial t^2} = c^2 \Delta \phi
+$$
 
 ## Features
 * **Manifold graph:** computes a graph $G = (N,E)$ with information about points, such as, indices, coordinates and distances using a KDTree.
