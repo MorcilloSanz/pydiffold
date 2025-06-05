@@ -1,21 +1,31 @@
 # PyDiffold :earth_americas:
-`PyDiffold` is a Python library for `differential geometry` on 2D manifolds embedded in $\mathbb{R}^3$. It provides tools for approximating `local differential structure` (tangent spaces, normal vectors, Riemannian metric tensors...), as well as discrete `differential operators` such as surface gradients and the Laplace–Beltrami 
-operator, using only point cloud data.
+`PyDiffold` is a Python library for `differential geometry`. It provides tools for approximating `local differential structure` (tangent spaces, normal vectors, Riemannian metric tensors...), as well as discrete `differential operators` such as surface gradients and the Laplace–Beltrami operator, using only point cloud data.
 
 The library is designed to facilitate numerical experimentation in geometry processing and geometric PDEs by operating directly on sampled surfaces, 
 without requiring explicit mesh connectivity.
 
+## Geodesics
+A geodesic is the shortest path between two points on a curved surface or manifold. It generalizes the concept of a straight line to curved spaces. Geodesics represent the natural “straightest” paths that respect the manifold’s geometry
+
+<p align="center">
+    <img src="/img/geodesic.png" alt="Imagen 1" width="300"/><br/>
+</p>
+
+The arc length of a geodesic is the distance measured along the curve between its endpoints. It quantifies the actual length of the path on the manifold, taking into account its curvature. Calculating the arc length is essential for understanding the geometry and distances on curved surfaces:
+
+$$ L(\gamma)=\int_{a}^{b}\sqrt{g_{\gamma(t)}(\dot{\gamma}(t),\dot{\gamma}(t))}\,dt$$
+
 ## PDE
 Since `PyDiffold` allows you to define functions on a manifold and perform advanced differential calculations such as the gradient, surface gradient, and Laplace-Beltrami operator, it provides powerful tools to solve partial differential equations (PDEs) on curved spaces.
 
-**Heat Equation:**  
+**Heat Equation**  
 The heat equation governs the diffusion of a scalar field $\phi(x,y,z;t)$ over a Riemannian manifold $(M,g)$, where $\Delta$ denotes the Laplace-Beltrami operator. It is given by:
 
 $$\frac{\partial \phi}{\partial t} = \alpha \Delta \phi$$
 
 describing how heat dissipates over time according to the intrinsic geometry of the manifold.
 
-**Wave Equation:**  
+**Wave Equation**  
 The wave equation describes the propagation of waves in a Riemannian manifold $(M,g)$, modeling second-order hyperbolic dynamics of the scalar field $\phi(x,y,z;t)$. It is expressed as:
 
 $$\frac{\partial^2 \phi}{\partial t^2} = c^2 \Delta \phi$$ 
@@ -36,7 +46,7 @@ where $c$ is the wave speed, and $\Delta$ denotes the Laplace-Beltrami operator,
   </tr>
 </table>
 
-## Features
+## Features :hammer_and_wrench:
 * **Manifold graph:** computes a graph $G = (N,E)$ with associating point indices and distances.
 * **Compute normals:** estimates normal vectors using PCA.
 * **Compute tangent bundle:** computes the tangent bundle $TM$ using PCA.
