@@ -6,13 +6,17 @@ The library is designed to facilitate numerical experimentation in geometry proc
 without requiring explicit mesh connectivity.
 
 ## PDE
+A scalar field $\phi(x,y,z;t)$ is defined on a manifold $M$.
 
-$$\frac{\partial \phi}{\partial t} = \alpha \Delta \phi$$
-$$\frac{\partial^2 \phi}{\partial t^2} = C \Delta \phi$$
-
-<p align="center">
-  <img src="/img/heat_equation.gif" alt="Imagen 1" width="200"/>
-  <img src="/img/wave_equation.gif" alt="Imagen 2" width="200"/>
+<p align="center" style="display: flex; justify-content: center; gap: 40px;">
+  <figure style="margin: 0; text-align: center;">
+    <img src="/img/heat_equation.gif" alt="Imagen 1" width="300"/>
+    <figcaption>Figure 1: Heat equation</figcaption>
+  </figure>
+  <figure style="margin: 0; text-align: center;">
+    <img src="/img/wave_equation.gif" alt="Imagen 2" width="300"/>
+    <figcaption>Figura 2: Wave equation</figcaption>
+  </figure>
 </p>
 
 ## Features
