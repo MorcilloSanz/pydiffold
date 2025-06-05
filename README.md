@@ -1,4 +1,4 @@
-# PyDiffold
+# PyDiffold :earth_americas:
 `PyDiffold` is a Python library for `differential geometry` on 2D manifolds embedded in $\mathbb{R}^3$. It provides tools for approximating `local differential structure` (tangent spaces, normal vectors, Riemannian metric tensors...), as well as discrete `differential operators` such as surface gradients and the Laplace–Beltrami 
 operator, using only point cloud data.
 
@@ -22,6 +22,7 @@ $$\frac{\partial^2 \phi}{\partial t^2} = c^2 \Delta \phi$$
 
 where $c$ is the wave speed, and $\Delta$ denotes the Laplace-Beltrami operator, reflecting how curvature influences wave propagation.
 
+**Heat and wave equations on a bunny surface**
 <table align="center">
   <tr>
     <td align="center">
@@ -36,12 +37,12 @@ where $c$ is the wave speed, and $\Delta$ denotes the Laplace-Beltrami operator,
 </table>
 
 ## Features
-* **Manifold graph:** computes a graph $G = (N,E)$ with information about points, such as, indices, coordinates and distances.
+* **Manifold graph:** computes a graph $G = (N,E)$ with associating point indices and distances.
 * **Compute normals:** estimates normal vectors using PCA.
 * **Compute tangent bundle:** computes the tangent bundle $TM$ using PCA.
 * **Compute metric tensor:** computes the metric tensor $g_{\mu \nu}$ for each point $p$ of the manifold.
 * **Compute geodesics:** computes the shortest path $\gamma(t)$ between two points of the manifold and its arc length $L$.
-* **Define scalar fields in manifolds:** $f : \mathcal{M} \rightarrow \mathbb{R}$.
+* **Define scalar fields in manifolds:** $\phi : \mathcal{M} \rightarrow \mathbb{R}$.
 * **Compute gradient:** approximates the gradient $\nabla f$ of a scalar field defined in a manifold.
 * **Compute surface gradient:** computes the surface gradient $\nabla_M f$ of a scalar field defined in a manifold.
 * **Compute Laplace-Beltrami:** approximates the Laplace-Beltrami $\Delta f$ of a scalar field defined in a manifold.
@@ -51,6 +52,7 @@ where $c$ is the wave speed, and $\Delta$ denotes the Laplace-Beltrami operator,
 * [SciPy](https://github.com/scipy/scipy)
 * [NetworkX](https://github.com/networkx/networkx)
 * [Matplotlib](https://github.com/matplotlib/matplotlib)
+* [Open3D](https://github.com/isl-org/Open3D)
 
 ## TODO
 * Vector and Tensor fields
@@ -59,6 +61,3 @@ where $c$ is the wave speed, and $\Delta$ denotes the Laplace-Beltrami operator,
 * Riemann Curvature Tensor
 * Ricci tensor
 * Higher dimensions manifolds
-
-## References
-[Laplacian Eigenmaps for Dimensionality Reduction and Data Representation](https://www2.imm.dtu.dk/projects/manifold/Papers/Laplacian.pdf)
