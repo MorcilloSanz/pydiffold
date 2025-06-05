@@ -11,8 +11,8 @@ $$\frac{\partial \phi}{\partial t} = \alpha \Delta \phi$$
 $$\frac{\partial^2 \phi}{\partial t^2} = C \Delta \phi$$
 
 <p align="center">
-  <img src="../img/heat_equation.gif" alt="Imagen 1" width="200"/>
-  <img src="../img/wave_equation.gif" alt="Imagen 2" width="200"/>
+  <img src="/img/heat_equation.gif" alt="Imagen 1" width="200"/>
+  <img src="/img/wave_equation.gif" alt="Imagen 2" width="200"/>
 </p>
 
 ## Features
