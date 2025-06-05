@@ -1,28 +1,27 @@
 # PyDiffold :earth_americas:
-`PyDiffold` is a Python library for `differential geometry` on 2D manifolds embedded in $\mathbb{R}^3$. It provides tools for approximating `local differential structure` (tangent spaces, normal vectors, Riemannian metric tensors...), as well as discrete `differential operators` such as surface gradients and the Laplace–Beltrami 
-operator, using only point cloud data.
+`PyDiffold` is a Python library for `differential geometry`. It provides tools for approximating `local differential structure` (tangent spaces, normal vectors, Riemannian metric tensors...), as well as discrete `differential operators` such as surface gradients and the Laplace–Beltrami operator, using only point cloud data.
 
 The library is designed to facilitate numerical experimentation in geometry processing and geometric PDEs by operating directly on sampled surfaces, 
 without requiring explicit mesh connectivity.
 
-## PDE
+## PDE :fire:
 Since `PyDiffold` allows you to define functions on a manifold and perform advanced differential calculations such as the gradient, surface gradient, and Laplace-Beltrami operator, it provides powerful tools to solve partial differential equations (PDEs) on curved spaces.
 
-**Heat Equation:**  
+**Heat Equation**  
 The heat equation governs the diffusion of a scalar field $\phi(x,y,z;t)$ over a Riemannian manifold $(M,g)$, where $\Delta$ denotes the Laplace-Beltrami operator. It is given by:
 
 $$\frac{\partial \phi}{\partial t} = \alpha \Delta \phi$$
 
 describing how heat dissipates over time according to the intrinsic geometry of the manifold.
 
-**Wave Equation:**  
+**Wave Equation**  
 The wave equation describes the propagation of waves in a Riemannian manifold $(M,g)$, modeling second-order hyperbolic dynamics of the scalar field $\phi(x,y,z;t)$. It is expressed as:
 
 $$\frac{\partial^2 \phi}{\partial t^2} = c^2 \Delta \phi$$ 
 
 where $c$ is the wave speed, and $\Delta$ denotes the Laplace-Beltrami operator, reflecting how curvature influences wave propagation.
 
-**Heat and wave equations on a bunny surface**
+**Heat and wave equations on a bunny surface** :rabbit2:
 <table align="center">
   <tr>
     <td align="center">
@@ -36,7 +35,7 @@ where $c$ is the wave speed, and $\Delta$ denotes the Laplace-Beltrami operator,
   </tr>
 </table>
 
-## Features
+## Features :hammer_and_wrench:
 * **Manifold graph:** computes a graph $G = (N,E)$ with associating point indices and distances.
 * **Compute normals:** estimates normal vectors using PCA.
 * **Compute tangent bundle:** computes the tangent bundle $TM$ using PCA.
@@ -47,14 +46,14 @@ where $c$ is the wave speed, and $\Delta$ denotes the Laplace-Beltrami operator,
 * **Compute surface gradient:** computes the surface gradient $\nabla_M f$ of a scalar field defined in a manifold.
 * **Compute Laplace-Beltrami:** approximates the Laplace-Beltrami $\Delta f$ of a scalar field defined in a manifold.
 
-## Dependencies
+## Dependencies :heavy_exclamation_mark:
 * [NumPy](https://github.com/numpy/numpy)
 * [SciPy](https://github.com/scipy/scipy)
 * [NetworkX](https://github.com/networkx/networkx)
 * [Matplotlib](https://github.com/matplotlib/matplotlib)
 * [Open3D](https://github.com/isl-org/Open3D)
 
-## TODO
+## TODO :white_check_mark:
 * Vector and Tensor fields
 * Covariant Derivative
 * Christoffel symbols
