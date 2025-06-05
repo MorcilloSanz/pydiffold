@@ -4,7 +4,18 @@
 The library is designed to facilitate numerical experimentation in geometry processing and geometric PDEs by operating directly on sampled surfaces, 
 without requiring explicit mesh connectivity.
 
-## PDE :fire:
+## Geodesics
+A geodesic is the shortest path between two points on a curved surface or manifold. It generalizes the concept of a straight line to curved spaces. Geodesics represent the natural “straightest” paths that respect the manifold’s geometry
+
+<p align="center">
+    <img src="/img/geodesic.png" alt="Imagen 1" width="300"/><br/>
+</p>
+
+The arc length of a geodesic is the distance measured along the curve between its endpoints. It quantifies the actual length of the path on the manifold, taking into account its curvature. Calculating the arc length is essential for understanding the geometry and distances on curved surfaces:
+
+$$L(\gamma )=\int _{a}^{b}{\sqrt {g_{\gamma (t)}({\dot {\gamma }}(t),{\dot {\gamma }}(t))}}\,dt$$
+
+## PDE
 Since `PyDiffold` allows you to define functions on a manifold and perform advanced differential calculations such as the gradient, surface gradient, and Laplace-Beltrami operator, it provides powerful tools to solve partial differential equations (PDEs) on curved spaces.
 
 **Heat Equation**  
@@ -21,7 +32,7 @@ $$\frac{\partial^2 \phi}{\partial t^2} = c^2 \Delta \phi$$
 
 where $c$ is the wave speed, and $\Delta$ denotes the Laplace-Beltrami operator, reflecting how curvature influences wave propagation.
 
-**Heat and wave equations on a bunny surface** :rabbit2:
+**Heat and wave equations on a bunny surface**
 <table align="center">
   <tr>
     <td align="center">
@@ -46,14 +57,14 @@ where $c$ is the wave speed, and $\Delta$ denotes the Laplace-Beltrami operator,
 * **Compute surface gradient:** computes the surface gradient $\nabla_M f$ of a scalar field defined in a manifold.
 * **Compute Laplace-Beltrami:** approximates the Laplace-Beltrami $\Delta f$ of a scalar field defined in a manifold.
 
-## Dependencies :heavy_exclamation_mark:
+## Dependencies
 * [NumPy](https://github.com/numpy/numpy)
 * [SciPy](https://github.com/scipy/scipy)
 * [NetworkX](https://github.com/networkx/networkx)
 * [Matplotlib](https://github.com/matplotlib/matplotlib)
 * [Open3D](https://github.com/isl-org/Open3D)
 
-## TODO :white_check_mark:
+## TODO
 * Vector and Tensor fields
 * Covariant Derivative
 * Christoffel symbols
