@@ -8,7 +8,18 @@ without requiring explicit mesh connectivity.
 ## PDE
 Since `PyDiffold` allows you to define a function as a scalar field, consider a scalar field $\phi(x,y,z;t)$ is defined on a manifold $M$. In the test folder, you can find example code for solving the heat and wave equations on a manifold using PyDiffold computing the Laplace-Beltrami operator.
 
-<table align="center">
+**Heat Equation:**  
+The heat equation governs the diffusion of a scalar field $\phi(x,y,z;t)$ over a Riemannian manifold $(M,g)$, where $\Delta$ denotes the Laplace-Beltrami operator associated with the metric $g$. It is given by  
+$$\frac{\partial \phi}{\partial t} = \alpha \Delta \phi$$  
+describing how heat dissipates over time according to the intrinsic geometry of the manifold.
+
+**Wave Equation:**  
+The wave equation describes the propagation of waves in a Riemannian manifold $(M,g)$, modeling second-order hyperbolic dynamics of the scalar field $\phi(x,y,z;t)$. It is expressed as  
+$$\frac{\partial^2 \phi}{\partial t^2} = c^2 \Delta \phi$$  
+where $c$ is the wave speed, and $\Delta$ denotes the Laplace-Beltrami operator, reflecting how curvature influences wave propagation.
+
+**Results**
+<table align="center" border="0">
   <tr>
     <td align="center">
       <img src="/img/heat_equation.gif" alt="Imagen 1" width="300"/><br/>
@@ -20,18 +31,6 @@ Since `PyDiffold` allows you to define a function as a scalar field, consider a 
     </td>
   </tr>
 </table>
-
-**Heat Equation:**  
-The heat equation models the temporal evolution of temperature \(\phi\) in a medium, describing heat diffusion:  
-$$
-\frac{\partial \phi}{\partial t} = \alpha \Delta \phi
-$$
-
-**Wave Equation:**  
-The wave equation models the propagation of disturbances \(\phi\) in a medium, such as sound or electromagnetic waves:  
-$$
-\frac{\partial^2 \phi}{\partial t^2} = c^2 \Delta \phi
-$$
 
 ## Features
 * **Manifold graph:** computes a graph $G = (N,E)$ with information about points, such as, indices, coordinates and distances using a KDTree.
