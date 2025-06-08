@@ -11,7 +11,7 @@ from pydiffold.function import ScalarField
 
 
 ALPHA: float = 0.2
-DELTA_T: float = 0.5
+DELTA_T: float = 1.0
 HEAT_SCALE_LAPLACIAN: float = 2
 
 animation_running: bool = False
@@ -32,7 +32,7 @@ def get_colors(phi: ScalarField) -> np.array:
     phi_min, phi_max = phi_values.min(), phi_values.max()
     phi_normalized = (phi_values - phi_min) / (phi_max - phi_min)
 
-    # Generate colors using matplotlib's viridis colormap
+    # Generate colors using matplotlib's colormap
     cmap = plt.get_cmap("gist_heat")
     colors_rgba = cmap(phi_normalized)  # Returns RGBA colors
     colors = colors_rgba[:, :3]  # Use only RGB
@@ -91,7 +91,7 @@ if __name__ == "__main__":
     vis.add_geometry(pcd)
     
     render_option = vis.get_render_option()
-    render_option.point_size = 15.0
+    render_option.point_size = 3
     
     # Animation callback
     def timer_callback(vis):
