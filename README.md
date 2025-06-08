@@ -33,18 +33,10 @@ $$\frac{\partial^2 \phi}{\partial t^2} = c^2 \Delta \phi$$
 where $c$ is the wave speed, and $\Delta$ denotes the Laplace-Beltrami operator, reflecting how curvature influences wave propagation.
 
 **Heat and wave equations on a bunny surface**
-<table align="center">
-  <tr>
-    <td align="center">
-      <img src="/img/heat_equation.gif" alt="Imagen 1" width="300"/><br/>
-      <small>Figure 1: Heat equation</small>
-    </td>
-    <td align="center" style="padding-left: 40px;">
-      <img src="/img/wave_equation.gif" alt="Imagen 2" width="300"/><br/>
-      <small>Figure 2: Wave equation</small>
-    </td>
-  </tr>
-</table>
+<p align="center">
+  <img src="/img/heat_equation.gif" width="300"/>
+  <img src="/img/wave_equation.gif" width="300"/>
+</p>
 
 ## Features :hammer_and_wrench:
 * **Manifold graph:** computes a graph $G = (N,E)$ with associating point indices and distances.

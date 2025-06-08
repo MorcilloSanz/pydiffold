@@ -32,7 +32,7 @@ def get_colors(phi: ScalarField) -> np.array:
     phi_min, phi_max = phi_values.min(), phi_values.max()
     phi_normalized = (phi_values - phi_min) / (phi_max - phi_min)
 
-    # Generate colors using matplotlib's viridis colormap
+    # Generate colors using matplotlib's colormap
     cmap = plt.get_cmap("jet")
     colors_rgba = cmap(phi_normalized)  # Returns RGBA colors
     colors = colors_rgba[:, :3]  # Use only RGB
@@ -40,7 +40,7 @@ def get_colors(phi: ScalarField) -> np.array:
     return colors
 
 
-def solve_equation(phi: ScalarField, phi_minus_1: ScalarField, pcd: o3d.geometry.PointCloud) -> None:
+def solve_equation(phi: ScalarField, phi_minus_1: ScalarField, pcd: o3d.geometry.PointCloud, move_points=False) -> None:
     """
     Perform one step of the wabe equation and update the point cloud colors.
 
@@ -49,13 +49,25 @@ def solve_equation(phi: ScalarField, phi_minus_1: ScalarField, pcd: o3d.geometry
         phi_minus_1 (ScalarField): The scalar field at t=-1
         pcd (o3d.geometry.PointCloud): The point cloud whose colors are updated.
     """
-    laplacian = phi.compute_laplace_beltrami(t=HEAT_SCALE_LAPLACIAN)
-    phi_t1 = 2 * phi.values - phi_minus_1.values + (C * DELTA_T)**2 * laplacian
+    # Solve equation
+    laplacian: np.aray = phi.compute_laplace_beltrami(t=HEAT_SCALE_LAPLACIAN)
+    phi_t1: np.array = 2 * phi.values - phi_minus_1.values + (C * DELTA_T)**2 * laplacian
     
     phi_minus_1.values = np.copy(phi.values)
     phi.values = phi_t1
 
+    # Update colors
     pcd.colors = o3d.utility.Vector3dVector(get_colors(phi))
+    
+    # Move points according to the solutions
+    if move_points:
+        
+        norms: np.array = np.linalg.norm(phi.manifold.normal_bundle, axis=1, keepdims=True)
+        norms[norms == 0] = 1
+        
+        normalized_normal_bundle: np.array = phi.manifold.normal_bundle / norms
+        points: np.array = phi.manifold.points + normalized_normal_bundle * phi.values[:, np.newaxis]
+        pcd.points = o3d.utility.Vector3dVector(points)
 
 
 def toggle_animation(vis):
@@ -82,7 +94,7 @@ if __name__ == "__main__":
     phi: ScalarField = ScalarField(manifold)
     for i in range(points.shape[0]):
         coords: np.array = manifold.points[i]
-        phi.set_value(np.sin(coords[0]) + np.sin(coords[1]), i)
+        phi.set_value((np.sin(coords[0]) + np.sin(coords[1])) / 3, i)
         
     phi_minus_1: ScalarField = ScalarField(manifold)
     phi_minus_1.values = np.copy(phi.values)
@@ -100,12 +112,12 @@ if __name__ == "__main__":
     vis.add_geometry(pcd)
     
     render_option = vis.get_render_option()
-    render_option.point_size = 15.0
+    render_option.point_size = 3
     
     # Animation callback
     def timer_callback(vis):
         if animation_running:
-            solve_equation(phi, phi_minus_1, pcd)
+            solve_equation(phi, phi_minus_1, pcd, move_points=True)
             vis.update_geometry(pcd)
         vis.poll_events()
         vis.update_renderer()
