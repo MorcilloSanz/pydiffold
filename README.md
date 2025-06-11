@@ -4,41 +4,39 @@
 The library is designed to facilitate numerical experimentation in geometry processing and geometric PDEs by operating directly on sampled surfaces, 
 without requiring explicit mesh connectivity.
 
-## Geodesics
-A geodesic is the shortest path between two points on a curved surface or manifold. It generalizes the concept of a straight line to curved spaces. Geodesics represent the natural “straightest” paths that respect the manifold’s geometry
-
+**Heat and wave equations**
 <p align="center">
-    <img src="/img/geodesic.png" alt="Imagen 1" width="300"/><br/>
+  <img src="/img/heat_equation.gif" width="250"/>
+  <img src="/img/wave_equation.gif" width="250"/>
+  <img src="/img/wave_equation_2.gif" width="250"/>
 </p>
 
-The arc length of a geodesic is the distance measured along the curve between its endpoints. It quantifies the actual length of the path on the manifold, taking into account its curvature. Calculating the arc length is essential for understanding the geometry and distances on curved surfaces:
+**Code Snippets**
+```python
+# Load points
+test_path: str = str(Path(__file__).resolve().parent)
+points: np.array = np.loadtxt(test_path + '/assets/bunny.txt')
 
-$$ L(\gamma)=\int_{a}^{b}\sqrt{g_{\gamma(t)}(\dot{\gamma}(t),\dot{\gamma}(t))}\,dt$$
+# Compute manifold
+manifold: Manifold = Manifold(points)
 
-## PDE
-Since `PyDiffold` allows you to define functions on a manifold and perform advanced differential calculations such as the gradient, surface gradient, and Laplace-Beltrami operator, it provides powerful tools to solve partial differential equations (PDEs) on curved spaces.
+# Geodesic
+geodesic, arc_length = manifold.geodesic(0, 2000)
+geodesic_coords: np.array = manifold.points[geodesic]
+```
 
-**Heat Equation**  
-The heat equation governs the diffusion of a scalar field $\phi(x,y,z;t)$ over a Riemannian manifold $(M,g)$, where $\Delta$ denotes the Laplace-Beltrami operator. It is given by:
+```python
+# Compute phi function
+phi: ScalarField = ScalarField(manifold)
+for i in range(points.shape[0]):
+    coords: np.array = manifold.points[i]
+    phi.set_value(np.sin(coords[0] * 2), i)
 
-$$\frac{\partial \phi}{\partial t} = \alpha \Delta \phi$$
+# Laplace-Beltrami
+laplacian: np.array = phi.compute_laplace_beltrami(t=HEAT_SCALE_LAPLACIAN)
+```
 
-describing how heat dissipates over time according to the intrinsic geometry of the manifold.
-
-**Wave Equation**  
-The wave equation describes the propagation of waves in a Riemannian manifold $(M,g)$, modeling second-order hyperbolic dynamics of the scalar field $\phi(x,y,z;t)$. It is expressed as:
-
-$$\frac{\partial^2 \phi}{\partial t^2} = c^2 \Delta \phi$$ 
-
-where $c$ is the wave speed, and $\Delta$ denotes the Laplace-Beltrami operator, reflecting how curvature influences wave propagation.
-
-**Heat and wave equations on a bunny surface**
-<p align="center">
-  <img src="/img/heat_equation.gif" width="300"/>
-  <img src="/img/wave_equation.gif" width="300"/>
-</p>
-
-## Features :hammer_and_wrench:
+## Features
 * **Manifold graph:** computes a graph $G = (N,E)$ with associating point indices and distances.
 * **Compute normals:** estimates normal vectors using PCA.
 * **Compute tangent bundle:** computes the tangent bundle $TM$ using PCA.
@@ -49,13 +47,6 @@ where $c$ is the wave speed, and $\Delta$ denotes the Laplace-Beltrami operator,
 * **Compute surface gradient:** computes the surface gradient $\nabla_M f$ of a scalar field defined in a manifold.
 * **Compute Laplace-Beltrami:** approximates the Laplace-Beltrami $\Delta f$ of a scalar field defined in a manifold.
 
-## Dependencies
-* [NumPy](https://github.com/numpy/numpy)
-* [SciPy](https://github.com/scipy/scipy)
-* [NetworkX](https://github.com/networkx/networkx)
-* [Matplotlib](https://github.com/matplotlib/matplotlib)
-* [Open3D](https://github.com/isl-org/Open3D)
-
 ## TODO
 * Vector and Tensor fields
 * Covariant Derivative
@@ -63,3 +54,10 @@ where $c$ is the wave speed, and $\Delta$ denotes the Laplace-Beltrami operator,
 * Riemann Curvature Tensor
 * Ricci tensor
 * Higher dimensions manifolds
+
+## Dependencies
+* [NumPy](https://github.com/numpy/numpy)
+* [SciPy](https://github.com/scipy/scipy)
+* [NetworkX](https://github.com/networkx/networkx)
+* [Matplotlib](https://github.com/matplotlib/matplotlib)
+* [Open3D](https://github.com/isl-org/Open3D)

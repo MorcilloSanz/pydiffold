@@ -76,7 +76,7 @@ if __name__ == "__main__":
     phi: ScalarField = ScalarField(manifold)
     for i in range(points.shape[0]):
         coords: np.array = manifold.points[i]
-        phi.set_value(np.sin(coords[0] * 2) + np.sin(coords[1] * 2), i)
+        phi.set_value(np.sin(coords[0] * 2), i)
         
     # Create pcd for Open3D
     pcd = o3d.geometry.PointCloud()
