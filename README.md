@@ -4,15 +4,16 @@
 The library is designed to facilitate numerical experimentation in geometry processing and geometric PDEs by operating directly on sampled surfaces, 
 without requiring explicit mesh connectivity.
 
-**Heat and wave equations**
-<p align="center">
-  <img src="/img/heat_equation_1.gif" width="250"/>
-  <img src="/img/heat_equation_2.gif" width="250"/>
-</p>
+## Heat and Wave Equation on the Stanford Bunny
+The Laplace–Beltrami operator was computed on the vertices of the Stanford Bunny, without relying on mesh connectivity. Based on this operator, the heat equation and the wave equation were solved on the surface of the model.
+
+The resulting solutions are shown as GIF animations, illustrating the diffusion of heat and the propagation of waves over the geometry.
 
 <p align="center">
-  <img src="/img/wave_equation_1.gif" width="250"/>
-  <img src="/img/wave_equation_2.gif" width="250"/>
+  <img src="/img/heat_equation_1.gif" width="200"/>
+  <img src="/img/heat_equation_2.gif" width="200"/>
+  <img src="/img/wave_equation_1.gif" width="200"/>
+  <img src="/img/wave_equation_2.gif" width="200"/>
 </p>
 
 **Code Snippets**
