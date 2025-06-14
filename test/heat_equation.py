@@ -76,7 +76,7 @@ if __name__ == "__main__":
     phi: ScalarField = ScalarField(manifold)
     for i in range(points.shape[0]):
         coords: np.array = manifold.points[i]
-        phi.set_value(np.sin(coords[0] * 2), i)
+        phi.set_value(np.sin(coords[0] * 1.5) + np.cos(coords[1] * 1.5), i)
         
     # Create pcd for Open3D
     pcd = o3d.geometry.PointCloud()
@@ -87,11 +87,11 @@ if __name__ == "__main__":
     
     # 3D viewer
     vis = o3d.visualization.VisualizerWithKeyCallback()
-    vis.create_window(width=800, height=800)
+    vis.create_window(width=300, height=300)
     vis.add_geometry(pcd)
     
     render_option = vis.get_render_option()
-    render_option.point_size = 3
+    render_option.point_size = 8
     
     # Animation callback
     def timer_callback(vis):

@@ -6,8 +6,12 @@ without requiring explicit mesh connectivity.
 
 **Heat and wave equations**
 <p align="center">
-  <img src="/img/heat_equation.gif" width="250"/>
-  <img src="/img/wave_equation.gif" width="250"/>
+  <img src="/img/heat_equation_1.gif" width="250"/>
+  <img src="/img/heat_equation_2.gif" width="250"/>
+</p>
+
+<p align="center">
+  <img src="/img/wave_equation_1.gif" width="250"/>
   <img src="/img/wave_equation_2.gif" width="250"/>
 </p>
 

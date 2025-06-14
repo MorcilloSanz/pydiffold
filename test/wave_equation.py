@@ -108,11 +108,11 @@ if __name__ == "__main__":
     
     # 3D viewer
     vis = o3d.visualization.VisualizerWithKeyCallback()
-    vis.create_window(width=800, height=800)
+    vis.create_window(width=300, height=300)
     vis.add_geometry(pcd)
     
     render_option = vis.get_render_option()
-    render_option.point_size = 3
+    render_option.point_size = 8
     
     # Animation callback
     def timer_callback(vis):
