@@ -98,9 +98,36 @@ class ScalarField(Function):
                 w_ij = self.manifold.graph[node][neighbor].get('weight', None)
                 sum += (v_j - v_i) * (f_j - f_i) / w_ij
             
-            gradient[node] = sum
+            gradient[node] = sum / len(neighbors)
         
         return gradient
+    
+    def compute_partial_derivatives(self) -> np.array:
+        """
+        Computes the partial derivatives of the scalar field in the local coordinates
+        of the manifold by projecting the ambient-space gradient onto the tangent basis.
+
+        For each point on the manifold, this method evaluates the directional derivatives
+        of the scalar field along the two orthonormal tangent vectors spanning the
+        local tangent plane. These correspond to partial derivatives with respect to
+        the local coordinates defined by the tangent basis (e₁, e₂).
+
+        Mathematically, for a function f defined on the manifold and a tangent basis
+        {e₁, e₂} at each point, the partial derivatives are computed as:
+
+            ∂_μ f = ⟨∇f, e₁⟩ 
+            ∂_ν f = ⟨∇f, e₂⟩
+
+        Returns:
+            np.array: An (N x 2) array where each row contains the two partial
+                        derivatives of the scalar field at a given point on the manifold.
+        """
+        derivatives: np.array = np.zeros((self.manifold.points.shape[0], 2))
+        
+        gradient: np.array = self.compute_gradient()
+        derivatives = np.einsum('ijk,ik->ij', self.manifold.tangent_bundle, gradient)
+        
+        return derivatives
 
     def compute_surface_gradient(self) -> np.array:
         """
@@ -115,14 +142,8 @@ class ScalarField(Function):
                         of the manifold, where N is the number of points on the manifold.
         """
         gradient: np.array = self.compute_gradient()
-        
-        norms: np.array = np.linalg.norm(self.manifold.normal_bundle, axis=1, keepdims=True)
-        norms[norms == 0] = 1
-        
-        normalized_normal_bundle: np.array = self.manifold.normal_bundle / norms
-        dot_product: np.array = np.einsum("ij,ij->i", gradient, normalized_normal_bundle)
-        
-        return gradient - dot_product[:, np.newaxis] * normalized_normal_bundle
+        dot_product: np.array = np.einsum("ij,ij->i", gradient, self.manifold.normalized_normal_bundle)
+        return gradient - dot_product[:, np.newaxis] * self.manifold.normalized_normal_bundle
     
     def __estimate_global_t(self):
         """

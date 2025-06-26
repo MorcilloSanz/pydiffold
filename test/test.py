@@ -20,15 +20,13 @@ if __name__ == "__main__":
     print(f'\033[1;95mManifold normal bundle:\033[0m\n {manifold.normal_bundle}')
     print(f'\033[1;95mManifold tangent bundle:\033[0m\n {manifold.tangent_bundle}')
     print(f'\033[1;95mMetric tensor:\033[0m\n {manifold.metric_tensor}')
+    print(f'\033[1;95mMetric tensor derivatives ∂_μ g, ∂_ν g:\033[0m\n {manifold.metric_tensor_derivatives}')
     
     function: ScalarField = ScalarField(manifold)
     for i in range(points.shape[0]):
         function.set_value(np.random.uniform(0, 10), i)
         
     print(f'\033[1;95mFunction values shape:\033[0m\n {function.values.shape}')
-    
-    surface_gradient: np.array = function.compute_surface_gradient()
-    print(f'\033[1;95mSurface gradient:\033[0m\n {surface_gradient}')
-    
-    laplace_beltrami: np.array = function.compute_laplace_beltrami(t=1)
-    print(f'\033[1;95mLaplace Beltrami:\033[0m\n {laplace_beltrami}')
+    print(f'\033[1;95mPartial derivatives ∂_μ f, ∂_ν f:\033[0m\n {function.compute_partial_derivatives()}')
+    print(f'\033[1;95mSurface gradient:\033[0m\n {function.compute_surface_gradient()}')
+    print(f'\033[1;95mLaplace Beltrami:\033[0m\n {function.compute_laplace_beltrami(t=1)}')
