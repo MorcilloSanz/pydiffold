@@ -38,10 +38,11 @@ class Manifold:
         self.normalized_normal_bundle: np.array = np.zeros((points.shape[0], 3))
         self.tangent_bundle: np.array = np.zeros((points.shape[0], 2, 3))
         self.metric_tensor: np.array = np.zeros((points.shape[0], 2, 2))
+        self.metric_tensor_inv: np.array = np.zeros(self.metric_tensor.shape)
         self.__compute_manifold()
         
         self.metric_tensor_derivatives: np.array = np.zeros((self.points.shape[0], 2, self.metric_tensor.shape[1], self.metric_tensor.shape[2]))
-        self.christoffel_symbols: np.array = np.zeros((self.points.shape[0], self.metric_tensor.shape[1], self.metric_tensor.shape[2], 2)) # mu nu sigma
+        self.christoffel_symbols: np.array = np.zeros((self.points.shape[0], self.metric_tensor.shape[1], self.metric_tensor.shape[2], 2)) # N x mu x nu x sigma
         self.christoffel_symbols_derivatives: np.array = np.zeros((self.points.shape[0], 2, 2, self.metric_tensor.shape[1], self.metric_tensor.shape[2]))
         self.__compute_curvature()
 
@@ -84,21 +85,27 @@ class Manifold:
 
         return eigenvalues, eigenvectors
 
-    def __compute_metric_tensor(self, tangent_space_basis: np.array) -> np.array:
+    def __compute_metric_tensor(self, tangent_space_basis: np.array) -> tuple[np.array, np.array]:
         """
-        Computes the Riemannian metric tensor at a point from the given tangent basis vectors.
+        Computes the Riemannian metric tensor and its inverse at a point from the given tangent basis vectors.
 
         Args:
             tangent_space_basis (np.array): A (2 x 3) array of orthonormal tangent vectors.
 
         Returns:
-            np.array: A (2 x 2) symmetric matrix representing the local metric tensor.
+            tuple[np.array, np.array]: A (2 x 2) symmetric matrix representing the local metric tensor and 
+                a (2 x 2) symmetric matrix representing the local INVERSE metric tensor.
         """
         e1, e2 = tangent_space_basis
-        return np.array([
+        
+        g: np.array = np.array([
             [np.dot(e1, e1), np.dot(e1, e2)],
             [np.dot(e2, e1), np.dot(e2, e2)]
         ])
+        
+        g_inv: np.array = np.linalg.inv(g)
+        
+        return g, g_inv
 
     def __compute_manifold(self) -> None:
         """
@@ -136,7 +143,7 @@ class Manifold:
             self.tangent_bundle[i] = tangent_space_basis
 
             # Compute metric tensor, Christoffel symbols and curvature tensor
-            self.metric_tensor[i] = self.__compute_metric_tensor(tangent_space_basis)
+            self.metric_tensor[i], self.metric_tensor_inv[i] = self.__compute_metric_tensor(tangent_space_basis)
 
     def __compute_metric_tensor_derivatives(self) -> None:
         """
@@ -185,14 +192,29 @@ class Manifold:
         from the metric tensor and its derivatives.
 
         Uses the standard formula for Christoffel symbols in coordinates:
-            Γ^k_ij = 1/2 * g^kl ( ∂_i g_lj + ∂_j g_il - ∂_l g_ij )
-
+            Γ^σ_{μν} = 1/2 * g^σl ( ∂_μ g_νl + ∂_ν g_μl - ∂_l g_iμν )
+            
         Stores the resulting symbols in `self.christoffel_symbols`, with shape
         (N x 2 x 2 x 2), where:
             - N is the number of sample points.
             - The last three indices correspond to (μ, ν, σ) = Γ^σ_{μν}.
         """
-        pass
+        for i in range(len(self.points)):
+            
+            for mu in range(0, self.metric_tensor.shape[1]):
+                for nu in range(0, self.metric_tensor.shape[2]):
+                    for sigma in range(0, 2):
+                        
+                        g_inv: np.array = self.metric_tensor_inv[i]
+                        partial_mu: np.array = self.metric_tensor_derivatives[i, 0]
+                        partial_nu: np.array = self.metric_tensor_derivatives[i, 1]
+                        
+                        sum: float = 0
+                        for l in range(0, 2):
+                            partial_lambda: np.array = self.metric_tensor_derivatives[i][l]
+                            sum += g_inv[sigma, l] * (partial_mu[nu, l] + partial_nu[mu, l] - partial_lambda[mu, nu])  
+                        
+                        self.christoffel_symbols[i, mu, nu, sigma] = 0.5 * sum
     
     def __compute_curvature(self) -> None:
         """

@@ -13,14 +13,19 @@ if __name__ == "__main__":
     test_path: str = str(Path(__file__).resolve().parent)
     points: np.array = np.loadtxt(test_path + '/assets/bunny.txt')
     manifold = Manifold(points)
+    
+    print(f'\033[1;95mManifold normal bundle:\033[0m\n {manifold.normal_bundle}')
+    print(f'\033[1;95mManifold tangent bundle:\033[0m\n {manifold.tangent_bundle}')
+    print(f'\033[1;95mMetric tensor:\033[0m\n {manifold.metric_tensor}')
+    print(f'\033[1;95mInverse metric tensor:\033[0m\n {manifold.metric_tensor_inv}')
+    print(f'\033[1;95mMetric tensor derivatives ∂_μ g, ∂_ν g:\033[0m\n {manifold.metric_tensor_derivatives}')
+    print(f'\033[1;95mChristoffel symbols Γ^σ_μν:\033[0m\n {manifold.christoffel_symbols}')
+    print('\n')
 
     geodesic, arc_length = manifold.geodesic(0, 2000)
     print(f'\033[1;95mGeodesic of arc length {arc_length}:\033[0m\n {geodesic}')
     print(f'\033[1;95mGeodesic vertex coordinates:\033[0m\n {manifold.points[geodesic]}')
-    print(f'\033[1;95mManifold normal bundle:\033[0m\n {manifold.normal_bundle}')
-    print(f'\033[1;95mManifold tangent bundle:\033[0m\n {manifold.tangent_bundle}')
-    print(f'\033[1;95mMetric tensor:\033[0m\n {manifold.metric_tensor}')
-    print(f'\033[1;95mMetric tensor derivatives ∂_μ g, ∂_ν g:\033[0m\n {manifold.metric_tensor_derivatives}')
+    print('\n')
     
     function: ScalarField = ScalarField(manifold)
     for i in range(points.shape[0]):
