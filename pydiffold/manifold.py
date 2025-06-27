@@ -31,6 +31,7 @@ class Manifold:
         self.points = points
         self.k = k
         
+        # Compute manifold
         self.tree = KDTree(points)
         self.graph: nx.Graph = nx.Graph()
 
@@ -41,9 +42,11 @@ class Manifold:
         self.metric_tensor_inv: np.array = np.zeros(self.metric_tensor.shape)
         self.__compute_manifold()
         
-        self.metric_tensor_derivatives: np.array = np.zeros((self.points.shape[0], 2, self.metric_tensor.shape[1], self.metric_tensor.shape[2]))
-        self.christoffel_symbols: np.array = np.zeros((self.points.shape[0], self.metric_tensor.shape[1], self.metric_tensor.shape[2], 2)) # N x mu x nu x sigma
-        self.christoffel_symbols_derivatives: np.array = np.zeros((self.points.shape[0], 2, 2, self.metric_tensor.shape[1], self.metric_tensor.shape[2]))
+        # Compute curvature
+        self.metric_tensor_derivatives: np.array = np.zeros((self.points.shape[0], 2, 2, 2))
+        self.christoffel_symbols: np.array = np.zeros((self.points.shape[0], 2, 2, 2))
+        self.christoffel_symbols_derivatives: np.array = np.zeros((self.points.shape[0], 2, 2, 2, 2))
+        self.riemann_tensor: np.array = np.zeros((self.points.shape[0], 2, 2, 2, 2))
         self.__compute_curvature()
 
     def __get_neighboorhood_data(self, neighborhood: np.array) -> np.array:
@@ -165,8 +168,8 @@ class Manifold:
             v_i: np.array = self.points[node]
             neighbors = list(self.graph.neighbors(node))
             
-            sum_mu: np.array = np.zeros((self.metric_tensor.shape[1], self.metric_tensor.shape[2]))
-            sum_nu: np.array = np.zeros((self.metric_tensor.shape[1], self.metric_tensor.shape[2]))
+            sum_mu: np.array = np.zeros((2, 2))
+            sum_nu: np.array = np.zeros((2, 2))
             
             for neighbor in neighbors:
                 
@@ -216,6 +219,53 @@ class Manifold:
                         
                         self.christoffel_symbols[i, mu, nu, sigma] = 0.5 * sum
     
+    def __compute_christoffel_symbols_derivatives(self) -> None:
+        """
+        Approximates the partial derivatives of the Christoffel symbols at each point
+        using finite differences along the local tangent directions.
+
+        For each node:
+        - Iterates over neighboring nodes in the connectivity graph.
+        - Computes directional differences of Christoffel symbols between neighbors.
+        - Projects the difference onto the local tangent basis.
+        - Accumulates the result as an approximation of the partial derivatives.
+
+        The result is stored in `self.christoffel_symbols_derivatives` with shape
+        (N x 2 x 2 x 2 x 2), where:
+            - N is the number of sample points.
+            - The first index denotes the derivative direction (tangent basis direction).
+            - The next three indices correspond to (μ, ν, σ) = ∂_α Γ^σ_{μν}.
+        """
+        for node in self.graph.nodes:
+            
+            gamma_i: np.array = self.christoffel_symbols[node]
+            v_i: np.array = self.points[node]
+            neighbors = list(self.graph.neighbors(node))
+            
+            sum_mu: np.array = np.zeros((2, 2, 2))
+            sum_nu: np.array = np.zeros((2, 2, 2))
+            
+            for neighbor in neighbors:
+                
+                gamma_j: np.array = self.christoffel_symbols[neighbor]
+                v_j: np.array = self.points[neighbor]
+                
+                gamma_diff: np.array = gamma_j - gamma_i
+                v_alpha: np.array = v_j - v_i
+                v_alpha /= np.linalg.norm(v_alpha)
+                
+                e1: np.array = self.tangent_bundle[node][0]
+                e2: np.array = self.tangent_bundle[node][1]
+                
+                sum_mu += gamma_diff * np.dot(v_alpha, e1)
+                sum_nu += gamma_diff * np.dot(v_alpha, e2)
+            
+            self.christoffel_symbols_derivatives[node, 0] = sum_mu
+            self.christoffel_symbols_derivatives[node, 1] = sum_nu
+        
+    def __compute_riemann_tensor(self) -> None:
+        pass
+    
     def __compute_curvature(self) -> None:
         """
         Computes all quantities needed to define curvature:
@@ -230,6 +280,7 @@ class Manifold:
         """
         self.__compute_metric_tensor_derivatives()
         self.__compute_christoffel_symbols()
+        self.__compute_christoffel_symbols_derivatives()
 
     def geodesic(self, start_index: int, end_index: int) -> tuple[np.array, float]:
         """
