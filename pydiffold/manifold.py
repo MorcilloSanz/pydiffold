@@ -137,16 +137,17 @@ class Manifold:
             # Compute normal and tangent vectors for point p
             normal: np.array = eigenvectors[2]
             self.normal_bundle[i] = normal
-            
-            norms: np.array = np.linalg.norm(self.normal_bundle, axis=1, keepdims=True)
-            norms[norms == 0] = 1
-            self.normalized_normal_bundle: np.array = self.normal_bundle / norms
 
             tangent_space_basis: np.array = eigenvectors[:, :2].T
             self.tangent_bundle[i] = tangent_space_basis
 
             # Compute metric tensor, Christoffel symbols and curvature tensor
             self.metric_tensor[i], self.metric_tensor_inv[i] = self.__compute_metric_tensor(tangent_space_basis)
+            
+        # Normalized normal bundle
+        norms: np.array = np.linalg.norm(self.normal_bundle, axis=1, keepdims=True)
+        norms[norms == 0] = 1
+        self.normalized_normal_bundle: np.array = self.normal_bundle / norms
 
     def __compute_metric_tensor_derivatives(self) -> None:
         """
