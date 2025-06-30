@@ -20,6 +20,8 @@ if __name__ == "__main__":
     print(f'\033[1;95mInverse metric tensor:\033[0m\n {manifold.metric_tensor_inv}')
     print(f'\033[1;95mMetric tensor derivatives ∂_μ g, ∂_ν g:\033[0m\n {manifold.metric_tensor_derivatives}')
     print(f'\033[1;95mChristoffel symbols Γ^σ_μν:\033[0m\n {manifold.christoffel_symbols}')
+    print(f'\033[1;95mChristoffel symbols derivatives ∂_μ Γ, ∂_ν Γ:\033[0m\n {manifold.christoffel_symbols_derivatives}')
+    print(f'\033[1;95mRiemann curvature tensor:\033[0m\n {manifold.riemann_tensor}')
     print('\n')
 
     geodesic, arc_length = manifold.geodesic(0, 2000)
