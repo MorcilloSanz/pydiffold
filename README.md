@@ -43,10 +43,16 @@ laplacian: np.array = phi.compute_laplace_beltrami(t=HEAT_SCALE_LAPLACIAN)
 
 ## Features
 * **Manifold graph:** computes a graph $G = (N,E)$ with associating point indices and distances.
+
+
 * **Compute normals:** estimates normal vectors using PCA.
 * **Compute tangent bundle:** computes the tangent bundle $TM$ using PCA.
 * **Compute metric tensor:** computes the metric tensor $g_{\mu \nu}$ for each point $p$ of the manifold.
+* **Christoffel symbols**
+* **Riemann Curvature Tensor**
+
 * **Compute geodesics:** computes the shortest path $\gamma(t)$ between two points of the manifold and its arc length $L$.
+
 * **Define scalar fields in manifolds:** $\phi : \mathcal{M} \rightarrow \mathbb{R}$.
 * **Compute gradient:** approximates the gradient $\nabla f$ of a scalar field defined in a manifold.
 * **Compute surface gradient:** computes the surface gradient $\nabla_M f$ of a scalar field defined in a manifold.
@@ -55,8 +61,6 @@ laplacian: np.array = phi.compute_laplace_beltrami(t=HEAT_SCALE_LAPLACIAN)
 ## TODO
 * Vector and Tensor fields
 * Covariant Derivative
-* Christoffel symbols
-* Riemann Curvature Tensor
 * Ricci tensor
 * Higher dimensions manifolds
 

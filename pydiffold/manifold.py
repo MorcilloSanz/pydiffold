@@ -31,23 +31,23 @@ class Manifold:
         self.points = points
         self.k = k
         
-        # Compute manifold
         self.tree = KDTree(points)
         self.graph: nx.Graph = nx.Graph()
 
         self.normal_bundle: np.array = np.zeros((points.shape[0], 3))
         self.normalized_normal_bundle: np.array = np.zeros((points.shape[0], 3))
         self.tangent_bundle: np.array = np.zeros((points.shape[0], 2, 3))
+        
         self.metric_tensor: np.array = np.zeros((points.shape[0], 2, 2))
         self.metric_tensor_inv: np.array = np.zeros(self.metric_tensor.shape)
-        self.__compute_manifold()
         
-        # Compute curvature
         self.metric_tensor_derivatives: np.array = np.zeros((self.points.shape[0], 2, 2, 2))
         self.christoffel_symbols: np.array = np.zeros((self.points.shape[0], 2, 2, 2))
         self.christoffel_symbols_derivatives: np.array = np.zeros((self.points.shape[0], 2, 2, 2, 2))
         self.riemann_tensor: np.array = np.zeros((self.points.shape[0], 2, 2, 2, 2))
-        self.__compute_curvature()
+        
+        self.__compute_manifold()
+        
 
     def __get_neighboorhood_data(self, neighborhood: np.array) -> np.array:
         """
@@ -141,13 +141,16 @@ class Manifold:
             tangent_space_basis: np.array = eigenvectors[:, :2].T
             self.tangent_bundle[i] = tangent_space_basis
 
-            # Compute metric tensor, Christoffel symbols and curvature tensor
+            # Compute metric tensor
             self.metric_tensor[i], self.metric_tensor_inv[i] = self.__compute_metric_tensor(tangent_space_basis)
             
         # Normalized normal bundle
         norms: np.array = np.linalg.norm(self.normal_bundle, axis=1, keepdims=True)
         norms[norms == 0] = 1
         self.normalized_normal_bundle: np.array = self.normal_bundle / norms
+        
+        # Compute curvature
+        self.__compute_curvature()
 
     def __compute_metric_tensor_derivatives(self) -> None:
         """
@@ -192,16 +195,37 @@ class Manifold:
     
     def __compute_christoffel_symbols(self) -> None:
         """
-        Computes the Christoffel symbols of the second kind at each point
-        from the metric tensor and its derivatives.
+        Computes the Christoffel symbols of the second kind at each sample point
+        using the metric tensor and its partial derivatives.
 
-        Uses the standard formula for Christoffel symbols in coordinates:
-            Γ^σ_{μν} = 1/2 * g^σl ( ∂_μ g_νl + ∂_ν g_μl - ∂_l g_iμν )
-            
-        Stores the resulting symbols in `self.christoffel_symbols`, with shape
-        (N x 2 x 2 x 2), where:
-            - N is the number of sample points.
-            - The last three indices correspond to (μ, ν, σ) = Γ^σ_{μν}.
+        The Christoffel symbols Γ^σ_{μν} define the Levi-Civita connection and describe
+        how tangent vectors are differentiated along coordinate directions on a manifold.
+
+        The computation uses the standard coordinate formula:
+            Γ^σ_{μν} = (1/2) * g^σλ ( ∂_μ g_νλ + ∂_ν g_μλ − ∂_λ g_μν )
+
+        Index meanings:
+            - μ, ν: Indices of the coordinate directions along which the derivative acts.
+            - λ: Dummy index used for summation (Einstein convention).
+            - σ: Index of the output coordinate direction of the resulting connection.
+
+        Data structure:
+            - self.metric_tensor[i] is the 2×2 metric tensor g_μν at sample point i.
+            - self.metric_tensor_inv[i] is the inverse metric tensor g^μν at point i.
+            - self.metric_tensor_derivatives[i, α] is ∂_α g_μν at point i,
+            for α ∈ {0, 1} representing the coordinate direction.
+
+        Storage format:
+            The computed Christoffel symbols are stored in `self.christoffel_symbols`,
+            an array of shape (N, 2, 2, 2), where:
+                - N is the number of sample points.
+                - The last three indices correspond to Γ^σ_{μν}, ordered as:
+                    [i, μ, ν, σ] → value of Γ^σ_{μν} at point i.
+
+        Notes:
+            - The Christoffel symbols are symmetric in the lower indices: Γ^σ_{μν} = Γ^σ_{νμ}.
+            - Assumes a 2-dimensional Riemannian manifold (μ, ν, σ ∈ {0, 1}).
+            - Derivatives of the metric tensor are assumed to be precomputed and provided.
         """
         for i in range(len(self.points)):
             
@@ -265,7 +289,66 @@ class Manifold:
             self.christoffel_symbols_derivatives[node, 1] = sum_nu
         
     def __compute_riemann_tensor(self) -> None:
-        pass
+        """
+        Computes the Riemann curvature tensor at each point of the manifold.
+
+        The Riemann tensor is computed using the Christoffel symbols and their
+        partial derivatives according to the coordinate formula:
+            R^ρ_{σμν} = ∂_μ Γ^ρ_{νσ} - ∂_ν Γ^ρ_{μσ} + Γ^ρ_{μλ} Γ^λ_{νσ} - Γ^ρ_{νλ} Γ^λ_{μσ}
+
+        Index meanings:
+            - μ (mu): First direction of derivation (appears in the antisymmetrization).
+            - ν (nu): Second direction of derivation (appears in the antisymmetrization).
+            - σ (sigma): Index of the component of the vector on which the connection acts.
+            - ρ (rho): Index of the output direction of the tensor (the vector being transported).
+        
+        More explicitly:
+            - ∂_μ Γ^ρ_{νσ} means the partial derivative of the Christoffel symbol Γ^ρ_{νσ}
+            with respect to coordinate x^μ.
+            - Γ^ρ_{μλ} Γ^λ_{νσ} involves summation over λ = 1, 2 (Einstein summation).
+
+        Tensor storage:
+            The result is stored in `self.riemann_tensor` with shape (N x 2 x 2 x 2 x 2), where:
+                - N: Number of sample points (nodes).
+                - μ: Index 2 of the last 4 dimensions (first direction of differentiation).
+                - ν: Index 3 of the last 4 dimensions (second direction of differentiation).
+                - σ: Index 1 of the last 4 dimensions (input vector component).
+                - ρ: Index 0 of the last 4 dimensions (output direction of curvature).
+
+        Properties and symmetries:
+            - Antisymmetric in the last two indices: R^ρ_{σμν} = -R^ρ_{σνμ}
+            - In 2D, the Riemann tensor has only one independent component at each point,
+            and the full tensor can be reconstructed from the scalar Gaussian curvature K.
+
+        Assumptions:
+            - `self.christoffel_symbols` contains Γ^σ_{μν} with shape (N x 2 x 2 x 2).
+            - `self.christoffel_symbols_derivatives` contains ∂_α Γ^σ_{μν} with shape (N x 2 x 2 x 2 x 2),
+            where α ∈ {0, 1} corresponds to derivatives in the directions of the tangent basis.
+            - Christoffel derivatives are approximated via finite differences.
+
+        Notes:
+            - This method assumes all required geometric quantities have been precomputed.
+            - Valid only for 2-dimensional smooth Riemannian manifolds.
+        """
+        for i in range(len(self.points)):
+            
+            for mu in range(0, 2):
+                for nu in range(0, 2):
+                    for sigma in range(0, 2):
+                        for rho in range(0, 2):
+                
+                            partial_mu: np.array = self.christoffel_symbols_derivatives[i, 0]
+                            partial_nu: np.array = self.christoffel_symbols_derivatives[i, 1]
+
+                            sum1: float = 0.0
+                            sum2: float = 0.0
+                            
+                            for l in range(0, 2):
+                                sum1 += self.christoffel_symbols[i, mu, l, rho] * self.christoffel_symbols[i, nu, sigma, l]
+                                sum2 += self.christoffel_symbols[i, nu, l, rho] * self.christoffel_symbols[i, mu, sigma, l]
+                                
+                            self.riemann_tensor[i, mu, nu, sigma, rho] = partial_mu[nu, sigma, rho] - partial_nu[mu, sigma, rho] + sum1 - sum2
+                                
     
     def __compute_curvature(self) -> None:
         """
@@ -282,6 +365,7 @@ class Manifold:
         self.__compute_metric_tensor_derivatives()
         self.__compute_christoffel_symbols()
         self.__compute_christoffel_symbols_derivatives()
+        self.__compute_riemann_tensor()
 
     def geodesic(self, start_index: int, end_index: int) -> tuple[np.array, float]:
         """
