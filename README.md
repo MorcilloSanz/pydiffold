@@ -4,7 +4,7 @@
 The library is designed to facilitate numerical experimentation in geometry processing and geometric PDEs by operating directly on sampled surfaces, 
 without requiring explicit mesh connectivity.
 
-## Heat and Wave Equation on the Stanford Bunny
+### PyDiffold for Partial Differential Equations
 The Laplace–Beltrami operator was computed on the vertices of the Stanford Bunny, without relying on mesh connectivity. Based on this operator, the heat equation and the wave equation were solved on the surface of the model.
 
 The resulting solutions are shown as GIF animations, illustrating the diffusion of heat and the propagation of waves over the geometry.
@@ -16,47 +16,78 @@ The resulting solutions are shown as GIF animations, illustrating the diffusion 
   <img src="/img/wave_equation_2.gif" width="200"/>
 </p>
 
-**Code Snippets**
+## Local differential structure
+
+**Compute 2-manifold:** computes the manifold $M$. Defined by an array of 3D points (N, 3), that represents a discretized surface.
 ```python
-# Load points
-test_path: str = str(Path(__file__).resolve().parent)
-points: np.array = np.loadtxt(test_path + '/assets/bunny.txt')
-
-# Compute manifold
+points: np.array = np.loadtxt('/assets/bunny.txt')
 manifold: Manifold = Manifold(points)
+```
 
-# Geodesic
+**Normal bundle:** computes the normal bundle $NM$ of the manifold $M$ (N, 3).
+```python
+normal_bundle: np.array = manifold.normal_bundle
+```
+
+**Tangent bundle:** computes the tangent bundle $TM$ of the manifold $M$ (N, 2, 3).
+```python
+tangent_bundle: np.array = manifold.tangent_bundle
+```
+
+**Metric tensor:** computes the metric tensor $g_{\mu \nu}$, its inverse $g^{\mu \nu}$ (N, 2, 2); and its derivatives $\partial_{\mu} g_{\mu \nu}$ and $\partial_{\nu} g_{\mu \nu}$ (N, 2, 2, 2) for each point $p \in M$.
+```python
+metric_tensor: np.array = manifold.metric_tensor
+metric_tensor_inv: np.array = manifold.metric_tensor_inv
+metric_tensor_derivatives: np.array = manifold.metric_tensor_derivatives
+```
+
+**Christoffel Symbols:** computes the Christoffel Symbols $\Gamma^{\sigma}_{\mu \nu}$ (N, 2, 2, 2) and its derivatives $\partial_{\mu} \Gamma^{\sigma}_{\mu \nu}$ and $\partial_{\nu} \Gamma^{\sigma}_{\mu \nu}$ (N, 2, 2, 2, 2) for each point $p \in M$.
+```python
+christoffel_symbols: np.array = manifold.christoffel_symbols
+christoffel_symbols_deivatives: np.array = manifold.christoffel_symbols_derivatives
+```
+
+**Riemann curvature tensor:** computes the Riemann curvature tensor $R^{\rho}_{\sigma \mu \nu}$ (N, 2, 2, 2, 2) for each point $p \in M$.
+```python
+riemann_tensor: np.array = manifold.riemann_tensor
+```
+
+**Compute geodesics:** computes the shortest path $\gamma(t)$ between two points of the manifold and its arc length $L$.
+```python
 geodesic, arc_length = manifold.geodesic(0, 2000)
 geodesic_coords: np.array = manifold.points[geodesic]
 ```
 
-```python
-# Compute phi function
-phi: ScalarField = ScalarField(manifold)
-for i in range(points.shape[0]):
-    coords: np.array = manifold.points[i]
-    phi.set_value(np.sin(coords[0] * 2), i)
+## Differential operators
 
-# Laplace-Beltrami
-laplacian: np.array = phi.compute_laplace_beltrami(t=HEAT_SCALE_LAPLACIAN)
+**Define scalar field:** define a scalar field $\phi : M \rightarrow \mathbb{R}$ that associates each point of the manifold $p \in M$ with a scalar.
+```python
+phi: ScalarField = ScalarField(manifold)
+
+for i in range(manifold.points.shape[0]):
+  coords: np.array = manifold.points[i]
+  phi.set_value(np.sin(coords[0] * 2), i)
 ```
 
-## Features
-* **Manifold graph:** computes a graph $G = (N,E)$ with associating point indices and distances.
+**Compute (ambient) gradient:** computes the gradient $\nabla \phi$ (N, 3) of a scalar field  for each point $p \in M$.
+```python
+ambient_gradient: np.array = phi.compute_gradient()
+```
 
+**Compute surface gradient:** computes the surface gradient $\nabla_M \phi$ (N, 3) of a scalar field  for each point $p \in M$.
+```python
+surface_gradient: np.array = phi.compute_surface_gradient()
+```
 
-* **Compute normals:** estimates normal vectors using PCA.
-* **Compute tangent bundle:** computes the tangent bundle $TM$ using PCA.
-* **Compute metric tensor:** computes the metric tensor $g_{\mu \nu}$ for each point $p$ of the manifold.
-* **Christoffel symbols**
-* **Riemann Curvature Tensor**
+**Compute partial derivatives in the tangent directions (directional derivatives)**: computes the partial derivatives $\partial_{\mu} \phi$ and $\partial_{\nu} \phi$ (N, 2) for each point $p \in M$.
+```python
+partial_derivatives: np.array = function.compute_partial_derivatives()
+```
 
-* **Compute geodesics:** computes the shortest path $\gamma(t)$ between two points of the manifold and its arc length $L$.
-
-* **Define scalar fields in manifolds:** $\phi : \mathcal{M} \rightarrow \mathbb{R}$.
-* **Compute gradient:** approximates the gradient $\nabla f$ of a scalar field defined in a manifold.
-* **Compute surface gradient:** computes the surface gradient $\nabla_M f$ of a scalar field defined in a manifold.
-* **Compute Laplace-Beltrami:** approximates the Laplace-Beltrami $\Delta f$ of a scalar field defined in a manifold.
+**Compute Laplace-Beltrami:** computes the Laplace-Beltrami $\Delta_M \phi$ of a scalar field for each point $p \in M$.
+```python
+laplacian: np.array = phi.compute_laplace_beltrami(t=HEAT_SCALE_LAPLACIAN)
+```
 
 ## TODO
 * Vector and Tensor fields
