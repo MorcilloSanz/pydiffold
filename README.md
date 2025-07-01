@@ -20,38 +20,38 @@ The resulting solutions are shown as GIF animations, illustrating the diffusion 
 
 **[Compute 2-manifold:](https://en.wikipedia.org/wiki/Manifold)** computes the manifold $M$. Defined by an array of 3D points, that represents a discretized surface.
 ```python
-points: np.array = np.loadtxt('/assets/bunny.txt')                                    # (N, 3)
+points: np.array = np.loadtxt('/assets/bunny.txt')                              # (N, 3)
 manifold: Manifold = Manifold(points)
 ```
 
 **[Normal](https://en.wikipedia.org/wiki/Normal_bundle) and [Tangent bundle:](https://en.wikipedia.org/wiki/Tangent_bundle)** computes the normal bundle $NM$ and tangent bundle $TM$ of the manifold $M$.
 ```python
-normal_bundle: np.array = manifold.normal_bundle                                      # (N, 3)
-tangent_bundle: np.array = manifold.tangent_bundle                                    # (N, 2, 3)
+normal_bundle: np.array = manifold.normal_bundle                                # (N, 3)
+tangent_bundle: np.array = manifold.tangent_bundle                              # (N, 2, 3)
 ```
 
 **[Metric tensor:](https://en.wikipedia.org/wiki/Metric_tensor)** computes the metric tensor $g_{\mu \nu}$, its inverse $g^{\mu \nu}$ and its derivatives $\partial_{\mu} g_{\mu \nu}$ and $\partial_{\nu} g_{\mu \nu}$ (N, 2, 2, 2) for each point $p \in M$.
 ```python
-metric_tensor: np.array = manifold.metric_tensor                                      # (N, 2, 2)
-metric_tensor_inv: np.array = manifold.metric_tensor_inv                              # (N, 2, 2)
-metric_tensor_derivatives: np.array = manifold.metric_tensor_derivatives              # (N, 2, 2, 2)
+metric_tensor: np.array = manifold.metric_tensor                                # (N, 2, 2)
+metric_tensor_inv: np.array = manifold.metric_tensor_inv                        # (N, 2, 2)
+metric_tensor_derivatives: np.array = manifold.metric_tensor_derivatives        # (N, 2, 2, 2)
 ```
 
 **[Christoffel Symbols:](https://en.wikipedia.org/wiki/Christoffel_symbols)** computes the Christoffel Symbols $\Gamma^{\sigma}_{\mu \nu}$ and its derivatives $\partial_{\mu} \Gamma^{\sigma}_{\mu \nu}$ and $\partial_{\nu} \Gamma^{\sigma}_{\mu \nu}$ for each point $p \in M$.
 ```python
-christoffel_symbols: np.array = manifold.christoffel_symbols                          # (N, 2, 2, 2)
-christoffel_symbols_deivatives: np.array = manifold.christoffel_symbols_derivatives   # (N, 2, 2, 2, 2)
+chris_symbols: np.array = manifold.christoffel_symbols                          # (N, 2, 2, 2)
+chris_symbols_deivatives: np.array = manifold.christoffel_symbols_derivatives   # (N, 2, 2, 2, 2)
 ```
 
 **[Riemann curvature tensor:](https://en.wikipedia.org/wiki/Riemann_curvature_tensor)** computes the Riemann curvature tensor $R^{\rho}_{\sigma \mu \nu}$ for each point $p \in M$.
 ```python
-riemann_tensor: np.array = manifold.riemann_tensor                                    # (N, 2, 2, 2, 2)
+riemann_tensor: np.array = manifold.riemann_tensor                              # (N, 2, 2, 2, 2)
 ```
 
 **[Compute geodesics:](https://en.wikipedia.org/wiki/Geodesic)** computes the shortest path $\gamma(t)$ between two points of the manifold and its arc length $L$.
 ```python
-geodesic, arc_length = manifold.geodesic(0, 2000)                                     # (K,)
-geodesic_coords: np.array = manifold.points[geodesic]                                 # (K, 3)
+geodesic, arc_length = manifold.geodesic(0, 2000)                               # (K,)
+geodesic_coords: np.array = manifold.points[geodesic]                           # (K, 3)
 ```
 
 ## Differential operators
@@ -67,18 +67,18 @@ for i in range(manifold.points.shape[0]):
 
 **[Ambient gradient:](https://en.wikipedia.org/wiki/Gradient) and [Surface gradient:](https://en.wikipedia.org/wiki/Surface_gradient)** computes the gradient $\nabla \phi$ and the surface gradient $\nabla_M \phi$ of a scalar field  for each point $p \in M$.
 ```python
-ambient_gradient: np.array = phi.compute_gradient()                                   # (N, 3)
-surface_gradient: np.array = phi.compute_surface_gradient()                           # (N, 3)
+ambient_gradient: np.array = phi.compute_gradient()                             # (N, 3)
+surface_gradient: np.array = phi.compute_surface_gradient()                     # (N, 3)
 ```
 
 **[Partial derivatives in the tangent directions (directional derivatives):](https://en.wikipedia.org/wiki/Directional_derivative)** computes the partial derivatives $\partial_{\mu} \phi$ and $\partial_{\nu} \phi$ for each point $p \in M$.
 ```python
-partial_derivatives: np.array = function.compute_partial_derivatives()                # (N, 2)
+partial_derivatives: np.array = function.compute_partial_derivatives()          # (N, 2)
 ```
 
 **[Laplace-Beltrami:](https://en.wikipedia.org/wiki/Laplace%E2%80%93Beltrami_operator)** computes the Laplace-Beltrami $\Delta_M \phi$ of a scalar field for each point $p \in M$.
 ```python
-laplacian: np.array = phi.compute_laplace_beltrami(t=HEAT_SCALE_LAPLACIAN)            # (N,)
+laplacian: np.array = phi.compute_laplace_beltrami(t=HEAT_SCALE_LAPLACIAN)      # (N,)
 ```
 
 ## TODO
