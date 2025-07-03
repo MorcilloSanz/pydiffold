@@ -349,6 +349,14 @@ class Manifold:
                                 
                             self.riemann_tensor[i, mu, nu, sigma, rho] = partial_mu[nu, sigma, rho] - partial_nu[mu, sigma, rho] + sum1 - sum2
                                 
+    def __compute_ricci_tensor(self) -> None:
+        pass
+    
+    def __compute_ricci_scalar(self) -> None:
+        pass
+    
+    def __compute_gauss_curvature(self) -> None:
+        pass
     
     def __compute_curvature(self) -> None:
         """

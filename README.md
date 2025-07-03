@@ -62,7 +62,7 @@ for i in range(manifold.points.shape[0]):
 
 ambient_gradient: np.array = phi.compute_gradient()                             # (N, 3)
 surface_gradient: np.array = phi.compute_surface_gradient()                     # (N, 3)
-partial_derivatives: np.array = function.compute_partial_derivatives()          # (N, 2)
+partial_derivatives: np.array = phi.compute_partial_derivatives()               # (N, 2)
 
 laplacian: np.array = phi.compute_laplace_beltrami(t=HEAT_SCALE_LAPLACIAN)      # (N,)
 ```
