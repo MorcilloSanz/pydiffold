@@ -5,8 +5,6 @@ from scipy.spatial import KDTree
 
 import networkx as nx
 
-import matplotlib.pyplot as plt
-
 
 class Manifold:
     """
@@ -433,7 +431,11 @@ class Manifold:
         Computes all quantities needed to define curvature:
         - Derivatives of the metric tensor.
         - Christoffel symbols of the second kind.
-        - (Optionally) derivatives of the Christoffel symbols or curvature tensors.
+        - Christoffel symbols derivatives.
+        - Riemann curvature tensor.
+        - Ricci tensor.
+        - Ricci scalar.
+        - Gauss curvature.
 
         Called automatically during initialization. Results are stored in:
         - `self.metric_tensor_derivatives`
@@ -444,6 +446,9 @@ class Manifold:
         self.__compute_christoffel_symbols()
         self.__compute_christoffel_symbols_derivatives()
         self.__compute_riemann_tensor()
+        self.__compute_ricci_tensor()
+        self.__compute_ricci_scalar()
+        self.__compute_gauss_curvature()
 
     def geodesic(self, start_index: int, end_index: int) -> tuple[np.array, float]:
         """
