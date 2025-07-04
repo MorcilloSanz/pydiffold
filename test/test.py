@@ -22,6 +22,9 @@ if __name__ == "__main__":
     print(f'\033[1;95mChristoffel symbols Γ^σ_μν:\033[0m\n {manifold.christoffel_symbols}')
     print(f'\033[1;95mChristoffel symbols derivatives ∂_μ Γ, ∂_ν Γ:\033[0m\n {manifold.christoffel_symbols_derivatives}')
     print(f'\033[1;95mRiemann curvature tensor:\033[0m\n {manifold.riemann_tensor}')
+    print(f'\033[1;95mRicci tensor:\033[0m\n {manifold.ricci_tensor}')
+    print(f'\033[1;95mRicci scalar:\033[0m\n {manifold.ricci_scalar}')
+    print(f'\033[1;95mGauss curvature:\033[0m\n {manifold.gauss_curvature}')
     print('\n')
 
     geodesic, arc_length = manifold.geodesic(0, 2000)
