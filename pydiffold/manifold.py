@@ -5,8 +5,6 @@ from scipy.spatial import KDTree
 
 import networkx as nx
 
-import matplotlib.pyplot as plt
-
 
 class Manifold:
     """
@@ -40,11 +38,15 @@ class Manifold:
         
         self.metric_tensor: np.array = np.zeros((points.shape[0], 2, 2))
         self.metric_tensor_inv: np.array = np.zeros(self.metric_tensor.shape)
-        
         self.metric_tensor_derivatives: np.array = np.zeros((self.points.shape[0], 2, 2, 2))
+        
         self.christoffel_symbols: np.array = np.zeros((self.points.shape[0], 2, 2, 2))
         self.christoffel_symbols_derivatives: np.array = np.zeros((self.points.shape[0], 2, 2, 2, 2))
+        
         self.riemann_tensor: np.array = np.zeros((self.points.shape[0], 2, 2, 2, 2))
+        self.ricci_tensor: np.array = np.zeros((points.shape[0], 2, 2))
+        self.ricci_scalar: np.array = np.zeros((points.shape[0],))
+        self.gauss_curvature: np.array = np.zeros((points.shape[0],))
         
         self.__compute_manifold()
         
@@ -349,13 +351,91 @@ class Manifold:
                                 
                             self.riemann_tensor[i, mu, nu, sigma, rho] = partial_mu[nu, sigma, rho] - partial_nu[mu, sigma, rho] + sum1 - sum2
                                 
+    def __compute_ricci_tensor(self) -> None:
+        """
+        Computes the Ricci curvature tensor at each point of the manifold.
+
+        The Ricci tensor is obtained by contracting the first and last indices
+        of the Riemann curvature tensor:
+            Ric_{μν} = R^ρ_{νμρ}
+
+        Index meanings:
+            - μ, ν: Coordinate indices for the Ricci tensor components.
+            - ρ: Index over which the contraction (summation) is performed.
+
+        Tensor storage:
+            The result is stored in `self.ricci_tensor` with shape (N x 2 x 2), where:
+                - N: Number of sample points (nodes).
+                - μ, ν: Tensor indices corresponding to coordinate directions.
+
+        Assumptions:
+            - `self.riemann_tensor` has been computed and has shape (N x 2 x 2 x 2 x 2).
+            - The manifold is 2-dimensional.
+
+        Notes:
+            - Ricci tensor is symmetric: Ric_{μν} = Ric_{νμ}
+        """
+        for i in range(len(self.points)):
+            
+            for mu in range(0, 2):
+                for nu in range(0, 2):
+                    
+                        sum = 0
+                        for rho in range(0, 2):
+                            sum += self.riemann_tensor[i, rho, nu, mu, rho]
+
+                        self.ricci_tensor[i, mu, nu] = sum
+    
+    def __compute_ricci_scalar(self) -> None:
+        """
+        Computes the Ricci scalar curvature at each point of the manifold.
+
+        The Ricci scalar is obtained by contracting the Ricci tensor with the
+        inverse of the metric tensor:
+            R = g^{μν} Ric_{μν}
+
+        Uses Einstein summation notation:
+            "iuv,iuv->i" indicates contraction over the μ and ν indices
+            for each point i.
+
+        Output:
+            - The scalar curvature is stored in `self.ricci_scalar`,
+                a 1D array of length N (number of points).
+
+        Assumptions:
+            - `self.ricci_tensor` and `self.metric_tensor_inv` are computed.
+            - The inverse metric has shape (N x 2 x 2).
+        """
+        self.ricci_scalar = np.einsum("iuv,iuv->i", self.metric_tensor_inv, self.ricci_tensor)
+    
+    def __compute_gauss_curvature(self) -> None:
+        """
+        Computes the Gaussian curvature at each point of the manifold.
+
+        In 2-dimensional Riemannian geometry, the Gaussian curvature K is
+        related to the Ricci scalar R by:
+            K = R / 2
+
+        Output:
+            - The Gaussian curvature is stored in `self.gauss_curvature`,
+                a 1D array of length N (number of points).
+
+        Assumptions:
+            - `self.ricci_scalar` has been computed.
+            - The manifold is 2-dimensional.
+        """
+        self.gauss_curvature = self.ricci_scalar / 2
     
     def __compute_curvature(self) -> None:
         """
         Computes all quantities needed to define curvature:
         - Derivatives of the metric tensor.
         - Christoffel symbols of the second kind.
-        - (Optionally) derivatives of the Christoffel symbols or curvature tensors.
+        - Christoffel symbols derivatives.
+        - Riemann curvature tensor.
+        - Ricci tensor.
+        - Ricci scalar.
+        - Gauss curvature.
 
         Called automatically during initialization. Results are stored in:
         - `self.metric_tensor_derivatives`
@@ -366,6 +446,9 @@ class Manifold:
         self.__compute_christoffel_symbols()
         self.__compute_christoffel_symbols_derivatives()
         self.__compute_riemann_tensor()
+        self.__compute_ricci_tensor()
+        self.__compute_ricci_scalar()
+        self.__compute_gauss_curvature()
 
     def geodesic(self, start_index: int, end_index: int) -> tuple[np.array, float]:
         """
