@@ -76,7 +76,6 @@ laplacian: np.array = phi.compute_laplace_beltrami(t=HEAT_SCALE_LAPLACIAN)      
 ## TODO
 * Vector and Tensor fields
 * Covariant Derivative
-* Ricci tensor
 * Higher dimensions manifolds
 
 ## Contributing
