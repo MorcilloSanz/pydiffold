@@ -5,6 +5,8 @@ from scipy.spatial import KDTree
 
 import networkx as nx
 
+from .features import GeometricFeatures
+
 
 class Manifold:
     """
@@ -36,6 +38,9 @@ class Manifold:
         self.normalized_normal_bundle: np.array = np.zeros((points.shape[0], 3))
         self.tangent_bundle: np.array = np.zeros((points.shape[0], 2, 3))
         
+        self.eigenvalues: np.array = np.zeros((points.shape[0], 3))
+        self.eigenvectors: np.array = np.zeros((points.shape[0], 3, 3))
+        
         self.metric_tensor: np.array = np.zeros((points.shape[0], 2, 2))
         self.metric_tensor_inv: np.array = np.zeros(self.metric_tensor.shape)
         self.metric_tensor_derivatives: np.array = np.zeros((self.points.shape[0], 2, 2, 2))
@@ -47,6 +52,7 @@ class Manifold:
         self.ricci_tensor: np.array = np.zeros((points.shape[0], 2, 2))
         self.ricci_scalar: np.array = np.zeros((points.shape[0],))
         self.gauss_curvature: np.array = np.zeros((points.shape[0],))
+        
         self.surface_variation: np.array = np.zeros((points.shape[0],))
         
         self.__compute_manifold()
@@ -74,6 +80,9 @@ class Manifold:
             # Compute eigenvalues and eigenvectors
             data = self.__get_neighboorhood_data(neighborhood)
             eigenvalues, eigenvectors = self.__eigen(data)
+            
+            self.eigenvalues[i] = eigenvalues
+            self.eigenvectors[i] = eigenvectors
 
             # Compute normal and tangent vectors for point p
             normal: np.array = eigenvectors[2]
@@ -86,7 +95,7 @@ class Manifold:
             self.metric_tensor[i], self.metric_tensor_inv[i] = self.__compute_metric_tensor(tangent_space_basis)
             
             # Suface variation
-            self.surface_variation[i] = eigenvalues[2] / (eigenvalues[0] + eigenvalues[1] + eigenvalues[2])
+            self.surface_variation[i] = GeometricFeatures.surface_variation(eigenvalues)
             
         # Normalized normal bundle
         norms: np.array = np.linalg.norm(self.normal_bundle, axis=1, keepdims=True)
