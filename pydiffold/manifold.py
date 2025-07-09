@@ -47,6 +47,7 @@ class Manifold:
         self.ricci_tensor: np.array = np.zeros((points.shape[0], 2, 2))
         self.ricci_scalar: np.array = np.zeros((points.shape[0],))
         self.gauss_curvature: np.array = np.zeros((points.shape[0],))
+        self.surface_variation: np.array = np.zeros((points.shape[0],))
         
         self.__compute_manifold()
 
@@ -72,7 +73,7 @@ class Manifold:
 
             # Compute eigenvalues and eigenvectors
             data = self.__get_neighboorhood_data(neighborhood)
-            _, eigenvectors = self.__eigen(data)
+            eigenvalues, eigenvectors = self.__eigen(data)
 
             # Compute normal and tangent vectors for point p
             normal: np.array = eigenvectors[2]
@@ -83,6 +84,9 @@ class Manifold:
 
             # Compute metric tensor
             self.metric_tensor[i], self.metric_tensor_inv[i] = self.__compute_metric_tensor(tangent_space_basis)
+            
+            # Suface variation
+            self.surface_variation[i] = eigenvalues[2] / (eigenvalues[0] + eigenvalues[1] + eigenvalues[2])
             
         # Normalized normal bundle
         norms: np.array = np.linalg.norm(self.normal_bundle, axis=1, keepdims=True)
