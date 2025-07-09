@@ -49,7 +49,48 @@ class Manifold:
         self.gauss_curvature: np.array = np.zeros((points.shape[0],))
         
         self.__compute_manifold()
+
+    def __compute_manifold(self) -> None:
+        """
+        Builds the internal structure of the manifold:
+        - Constructs a connectivity graph using radius-based neighborhoods.
+        - Estimates local tangent and normal spaces via PCA at each point.
+        - Computes the Riemannian metric tensor at each sample point.
+        """
+        for i, p in enumerate(self.points):
+
+            distances, indices = self.tree.query(p, k=self.k + 1)
+            neighborhood: np.array = self.points[indices]
+            
+            if len(neighborhood) < self.__MIN_NEIGHBORHOOD:
+                continue
+            
+            # Compute graph
+            for idx, j in enumerate(indices):
+                if j != i:
+                    self.graph.add_edge(i, j, weight=distances[idx])
+
+            # Compute eigenvalues and eigenvectors
+            data = self.__get_neighboorhood_data(neighborhood)
+            _, eigenvectors = self.__eigen(data)
+
+            # Compute normal and tangent vectors for point p
+            normal: np.array = eigenvectors[2]
+            self.normal_bundle[i] = normal
+
+            tangent_space_basis: np.array = eigenvectors[:, :2].T
+            self.tangent_bundle[i] = tangent_space_basis
+
+            # Compute metric tensor
+            self.metric_tensor[i], self.metric_tensor_inv[i] = self.__compute_metric_tensor(tangent_space_basis)
+            
+        # Normalized normal bundle
+        norms: np.array = np.linalg.norm(self.normal_bundle, axis=1, keepdims=True)
+        norms[norms == 0] = 1
+        self.normalized_normal_bundle: np.array = self.normal_bundle / norms
         
+        # Compute curvature
+        self.__compute_curvature()
 
     def __get_neighboorhood_data(self, neighborhood: np.array) -> np.array:
         """
@@ -111,48 +152,6 @@ class Manifold:
         g_inv: np.array = np.linalg.inv(g)
         
         return g, g_inv
-
-    def __compute_manifold(self) -> None:
-        """
-        Builds the internal structure of the manifold:
-        - Constructs a connectivity graph using radius-based neighborhoods.
-        - Estimates local tangent and normal spaces via PCA at each point.
-        - Computes the Riemannian metric tensor at each sample point.
-        """
-        for i, p in enumerate(self.points):
-
-            distances, indices = self.tree.query(p, k=self.k + 1)
-            neighborhood: np.array = self.points[indices]
-            
-            if len(neighborhood) < self.__MIN_NEIGHBORHOOD:
-                continue
-            
-            # Compute graph
-            for idx, j in enumerate(indices):
-                if j != i:
-                    self.graph.add_edge(i, j, weight=distances[idx])
-
-            # Compute eigenvalues and eigenvectors
-            data = self.__get_neighboorhood_data(neighborhood)
-            _, eigenvectors = self.__eigen(data)
-
-            # Compute normal and tangent vectors for point p
-            normal: np.array = eigenvectors[2]
-            self.normal_bundle[i] = normal
-
-            tangent_space_basis: np.array = eigenvectors[:, :2].T
-            self.tangent_bundle[i] = tangent_space_basis
-
-            # Compute metric tensor
-            self.metric_tensor[i], self.metric_tensor_inv[i] = self.__compute_metric_tensor(tangent_space_basis)
-            
-        # Normalized normal bundle
-        norms: np.array = np.linalg.norm(self.normal_bundle, axis=1, keepdims=True)
-        norms[norms == 0] = 1
-        self.normalized_normal_bundle: np.array = self.normal_bundle / norms
-        
-        # Compute curvature
-        self.__compute_curvature()
 
     def __compute_metric_tensor_derivatives(self) -> None:
         """
